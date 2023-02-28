@@ -7,9 +7,9 @@ from qwippit.config import Config
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
-login_manager = LoginManager()
-login_manager.login_view = 'users.login'
-login_manager.login_message_category = 'info'
+# login_manager = LoginManager()
+# login_manager.login_view = 'users.login'
+# login_manager.login_message_category = 'info'
 mail = Mail()
 
 def create_app(config_class=Config):
@@ -18,14 +18,14 @@ def create_app(config_class=Config):
 
     db.init_app(app)
     bcrypt.init_app(app)
-    login_manager.init_app(app)
+    # login_manager.init_app(app)
     mail.init_app(app)
 
-    from qwippit.users.routes import users
+    # from qwippit.users.routes import users
     from qwippit.main.routes import main
     from qwippit.errors.handlers import errors
 
-    app.register_blueprint(users)
+    # app.register_blueprint(users)
     app.register_blueprint(main)
     app.register_blueprint(errors)
 
