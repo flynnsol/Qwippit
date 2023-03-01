@@ -4,6 +4,7 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_mail import Mail
 from qwippit.config import Config
+from flask_mobility import Mobility
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -28,5 +29,7 @@ def create_app(config_class=Config):
     app.register_blueprint(users)
     app.register_blueprint(main)
     app.register_blueprint(errors)
+
+    Mobility(app)
 
     return app

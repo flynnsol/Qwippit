@@ -12,14 +12,16 @@
             </div>
             <div class="qwipp-feed">
                 {% for qwipp in qwipps %}
-                    <article class="d-flex media content-section">
-                        <img class="me-3 rounded-circle article-img border border-dark" src="{{ url_for('static', filename='img/logo.png') }}">
-                        <div class="media-body">
-                            <div class="article-metadata">
-                                <a class="author-link mr-2" href="{{ url_for('main.home') }}">{{ qwipp.author }}</a>
+                    <article onclick="location.href='{{ url_for('main.home') }}'" class="row content-section">
+                        <div class="d-flex media">
+                            <img class="me-3 rounded-circle article-img border border-highlight" src="{{ url_for('static', filename='img/logo.png') }}">
+                            <div class="media-body">
+                                <div class="article-metadata">
+                                    <a class="author-link mr-2" href="{{ url_for('main.home') }}">{{ qwipp.author }}</a>
+                                </div>
+                                <p class="article-content">{{ qwipp.content }}</p>
+                                <small class="text-muted">February 28, 2023</small>
                             </div>
-                            <p class="article-content">{{ qwipp.content }}</p>
-                            <small class="text-muted">February 28, 2023</small>
                         </div>
                     </article>
                 {% endfor %}

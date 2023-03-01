@@ -44,17 +44,19 @@
         </header>
         <main role="main" class="container">
             <div class="row">
-                <div class="col-md-3">
-                    <div class="position-fixed" style="width: 16.4%">
-                        <ul class="list-group">
-                            <li class="list-group-item bg-main main-font-nh"><h3>Qwippit</h3></li>
-                            <li onclick="location.href='{{ url_for('main.home') }}'" class="list-group-item bg-main main-font-nh"><h5>Home</h5></li>
-                            <li onclick="location.href='{{ url_for('main.home') }}'" class="list-group-item bg-main main-font-nh"><h5>Profile</h5></li>
-                            <li onclick="location.href='{{ url_for('main.home') }}'" class="list-group-item bg-main main-font-nh"><h5>Notifications</h5></li>
-                            <li onclick="location.href='{{ url_for('main.home') }}'" class="list-group-item lgl-last bg-main main-font-nh"><h5>Settings</h5></li>
-                        </ul>
+                {% if request.MOBILE == False %}
+                    <div class="col-md-3">
+                        <div class="position-fixed" style="width: 16.4%">
+                            <ul class="list-group">
+                                <li class="list-group-item bg-main main-font-nh"><h3>Qwippit</h3></li>
+                                <li onclick="location.href='{{ url_for('main.home') }}'" class="list-group-item bg-main main-font-nh"><h6>Home</h6></li>
+                                <li onclick="location.href='{{ url_for('main.home') }}'" class="list-group-item bg-main main-font-nh"><h6>Profile</h6></li>
+                                <li onclick="location.href='{{ url_for('main.home') }}'" class="list-group-item bg-main main-font-nh"><h6>Notifications</h6></li>
+                                <li onclick="location.href='{{ url_for('main.home') }}'" class="list-group-item lgl-last bg-main main-font-nh"><h6>Settings</h6></li>
+                            </ul>
+                        </div>
                     </div>
-                </div>
+                {% endif %}
                 <div class="col-md-6 center-content">
                     {% with messages = get_flashed_messages(with_categories=true) %}
                         {% if messages %}
@@ -67,17 +69,19 @@
                     {% endwith %}
                     {% block content %}{% endblock %}
                 </div>
-                <div class="col-md-3">
-                    <div class="position-fixed" style="width: 16.4%">
-                        <ul class="list-group">
-                            <li class="list-group-item bg-main main-font-nh"><h3>What's New?</h3></li>
-                            <li onclick="location.href='{{ url_for('main.home') }}'" class="list-group-item bg-main main-font-nh">#this</li>
-                            <li onclick="location.href='{{ url_for('main.home') }}'" class="list-group-item bg-main main-font-nh">#that</li>
-                            <li onclick="location.href='{{ url_for('main.home') }}'" class="list-group-item bg-main main-font-nh">#huntress</li>
-                            <li onclick="location.href='{{ url_for('main.home') }}'" class="list-group-item lgl-last bg-main main-font-nh">#qwippit</li>
-                        </ul>
+                {% if request.MOBILE == False %}
+                    <div class="col-md-3">
+                        <div class="position-fixed" style="width: 16.4%">
+                            <ul class="list-group">
+                                <li class="list-group-item bg-main main-font-nh"><h3>What's New?</h3></li>
+                                <li onclick="location.href='{{ url_for('main.home') }}'" class="list-group-item bg-main main-font-nh">#this</li>
+                                <li onclick="location.href='{{ url_for('main.home') }}'" class="list-group-item bg-main main-font-nh">#that</li>
+                                <li onclick="location.href='{{ url_for('main.home') }}'" class="list-group-item bg-main main-font-nh">#huntress</li>
+                                <li onclick="location.href='{{ url_for('main.home') }}'" class="list-group-item lgl-last bg-main main-font-nh">#qwippit</li>
+                            </ul>
+                        </div>
                     </div>
-                </div>
+                {% endif %}
             </div>
         </main>
     </body>
