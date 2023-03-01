@@ -2,7 +2,7 @@ from flask import Blueprint, request, render_template
 
 main = Blueprint('main', __name__)
 
-posts = [
+qwipps = [
     {
         'author': 'Flynn Sol',
         'content': 'Hello World, this is a content test. Please wrap this text around the div.',
@@ -17,10 +17,6 @@ posts = [
 
 
 @main.route("/")
-def landing():
-    return render_template('main/landing.html')
-
-
 @main.route("/home")
 def home():
-    return render_template('main/home.html', posts=posts, title='Feed')
+    return render_template('main/home.html', qwipps=qwipps, title='Home')

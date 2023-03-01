@@ -1,0 +1,32 @@
+{% extends "main/layout.html" %}
+{% block content %}
+    <div>
+        <div class="qwipp-qwill">
+            <div class="row center-content-top">
+                <div class="col feed-option feed-qwipp active">
+                    <h4>Qwipp</h4>
+                </div>
+                <div class="col feed-option feed-qwill">
+                    <h4>Qwill</h4>
+                </div>
+            </div>
+            <div class="qwipp-feed">
+                {% for qwipp in qwipps %}
+                    <article class="d-flex media content-section">
+                        <img class="me-3 rounded-circle article-img border border-dark" src="{{ url_for('static', filename='img/logo.png') }}">
+                        <div class="media-body">
+                            <div class="article-metadata">
+                                <a class="author-link mr-2" href="{{ url_for('main.home') }}">{{ qwipp.author }}</a>
+                            </div>
+                            <p class="article-content">{{ qwipp.content }}</p>
+                            <small class="text-muted">February 28, 2023</small>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+            <div class="qwill-feed">
+
+            </div>
+        </div>
+    </div>
+{% endblock content %}
