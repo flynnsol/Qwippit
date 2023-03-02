@@ -29,6 +29,10 @@ a {
     color: #BEA7E5;
 }
 
+.hidden {
+    display: none;
+}
+
 /* Nav */
 
 .site-header .navbar-nav .nav-link {
@@ -149,6 +153,18 @@ a {
     --bs-border-color: #54485D;
 }
 
+.create-input {
+    cursor: auto;
+}
+
+.create-input:hover {
+    background-color: #31263B;
+}
+
+#qwipp-text-area {
+    resize: none;
+}
+
 
 /* Side Content Lists */
 
@@ -219,6 +235,15 @@ input:-webkit-autofill:focus {
     border-color: #54485D;
     color: #EFDBF9;
     box-shadow: 0 0 0 0.25rem rgb(67 55 76 / 25%);
+}
+
+/* error */
+
+.error-section {
+    border-top-right-radius: 1rem;
+    border-top-left-radius: 1rem;
+    border-top: 0.15rem solid;
+    border-color: #43374C;
 }
 
 

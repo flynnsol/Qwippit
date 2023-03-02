@@ -1,4 +1,5 @@
 from flask import Blueprint, request, render_template
+from qwippit.qwipps.forms import QwippForm
 
 main = Blueprint('main', __name__)
 
@@ -19,4 +20,5 @@ qwipps = [
 @main.route("/")
 @main.route("/home")
 def home():
-    return render_template('main/home.html', qwipps=qwipps, title='Home')
+    qwipp_form = QwippForm()
+    return render_template('main/home.html', qwipps=qwipps, qwipp_form=qwipp_form, title='Home')

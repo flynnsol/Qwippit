@@ -8,11 +8,11 @@ from qwippit.models import User
 
 
 class RegistrationForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired(), Length(2, 16)])
-    displayname = StringField('Display Name', validators=[DataRequired(), Length(2, 20)])
+    username = StringField('Username (@)', validators=[DataRequired(), Length(min=2, max=16)])
+    displayname = StringField('Display Name', validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    password = PasswordField('Password', validators=[DataRequired(), Length(8)])
-    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), Length(8), EqualTo('password')])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=8)])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), Length(min=8), EqualTo('password')])
 
     submit = SubmitField('Sign Up')
 
@@ -36,7 +36,7 @@ class LoginForm(FlaskForm):
 
 
 class UpdateAccountForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired(), Length(2, 20)])
+    username = StringField('Username', validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField('Email', validators=[DataRequired(), Email()])
     picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
 
@@ -67,7 +67,7 @@ class RequestResetForm(FlaskForm):
 
 
 class ResetPasswordForm(FlaskForm):
-    password = PasswordField('Password', validators=[DataRequired(), Length(8)])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=8)])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), Length(8), EqualTo('password')])
 
     submit = SubmitField('Reset Password')
