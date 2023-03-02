@@ -246,6 +246,26 @@ input:-webkit-autofill:focus {
     border-color: #43374C;
 }
 
+/* modal */
+
+.modal {
+    --bs-modal-bg: #31263B;
+}
+
+.modal-footer {
+    justify-content: flex-start;
+}
+
+.btn-close {
+    background-color: #EFDBF9;
+    transition: background-color 0.25s ease;
+    opacity: 1;
+}
+
+.btn-close:hover {
+    background-color: #BEA7E5;
+    opacity: 1;
+}
 
 /*  primary color change */
 

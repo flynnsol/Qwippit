@@ -17,12 +17,12 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField('Sign Up')
 
     def validate_username(self, username):
-        user = User.query.filter_by(username=username.data).first()
+        user = User.query.filter_by(username=username.data.lower()).first()
         if user:
             raise ValidationError('That username is in use. Please choose a different username.')
 
     def validate_email(self, email):
-        user = User.query.filter_by(email=email.data).first()
+        user = User.query.filter_by(email=email.data.lower()).first()
         if user:
             raise ValidationError('That email is in use. Please choose a different email.')
 

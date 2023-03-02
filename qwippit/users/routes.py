@@ -1,4 +1,4 @@
-from flask_login import current_user, login_user
+from flask_login import current_user, login_user, logout_user
 
 from qwippit import bcrypt, db
 from qwippit.models import User, Qwipp, Qwill
@@ -9,22 +9,22 @@ from qwippit.users.forms import RegistrationForm, LoginForm
 users = Blueprint('users', __name__)
 
 
-@users.route("/u/signup", methods=['GET', 'POST'])
+@users.route("/signup", methods=['GET', 'POST'])
 def signup():
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+        user = User(username=form.username.data, displayname=form.displayname.data, email=form.email.data, password=hashed_password)
         db.session.add(user)
         db.session.commit()
-        flash(f'Your account has been created! You are now able to login.', 'success')
-        return redirect(url_for('users.login'))
+        flash(f'Your account has been created! You are now able to sign in.', 'success')
+        return redirect(url_for('users.signin'))
     return render_template('users/signup.html', title='Sign Up', form=form)
 
 
-@users.route("/u/signin", methods=['GET', 'POST'])
+@users.route("/signin", methods=['GET', 'POST'])
 def signin():
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
@@ -36,5 +36,18 @@ def signin():
             next_page = request.args.get('next')
             return redirect(next_page) if next_page else redirect(url_for('main.home'))
         else:
-            flash('Login Unsuccessful. Please check email and password.', 'danger')
+            flash('Sign In Unsuccessful. Please check email and password.', 'danger')
     return render_template('users/signin.html', title='Sign In', form=form)
+
+
+@users.route("/signout")
+def signout():
+    logout_user()
+    return redirect(url_for('main.home'))
+
+@users.route("/<string:username>")
+def profile(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    qwipps = Qwipp.query.filter_by(author=user)\
+        .order_by(Qwipp.date_posted.desc())
+    return render_template('users/profile.html', qwipps=qwipps, user=user, title='@' + username)

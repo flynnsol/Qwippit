@@ -30,8 +30,7 @@
                         <!-- Right Side -->
                         {% if current_user.is_authenticated %}
                             <div class="navbar-nav ms-auto">
-                                <a class="nav-item nav-link main-font" href="{{ url_for('users.account') }}">{{ current_user.username }}</a>
-                                <a class="nav-item nav-link main-font" href="{{ url_for('users.signout') }}">Sign Out</a>
+                                <a class="nav-item nav-link main-font btn btn-outline-primary" href="{{ url_for('users.signout') }}">Sign Out</a>
                             </div>
                         {% else %}
                             <div class="navbar-nav ms-auto">
@@ -49,25 +48,53 @@
                     <div class="col-md-3">
                         <div class="position-fixed" style="width: 16.4%">
                             <ul class="list-group">
-                                <li class="list-group-item bg-main main-font-nh"><h3>Qwippit</h3></li>
-                                <li onclick="location.href='{{ url_for('main.home') }}'" class="list-group-item bg-main main-font-nh"><h6>Home</h6></li>
-                                <li onclick="location.href='{{ url_for('main.home') }}'" class="list-group-item bg-main main-font-nh"><h6>Profile</h6></li>
-                                <li onclick="location.href='{{ url_for('main.home') }}'" class="list-group-item bg-main main-font-nh"><h6>Notifications</h6></li>
-                                <li onclick="location.href='{{ url_for('main.home') }}'" class="list-group-item lgl-last bg-main main-font-nh"><h6>Settings</h6></li>
+                                {% if current_user.is_authenticated %}
+                                    <li class="list-group-item bg-main main-font-nh"><h3>{{ current_user.displayname }}</h3><h6 class="text-muted">@{{ current_user.username }}</h6></li>
+                                    <li onclick="location.href='{{ url_for('main.home') }}'" class="list-group-item bg-main main-font-nh"><h6>Home</h6></li>
+                                    <li onclick="location.href='{{ url_for('users.profile', username=current_user.username) }}'" class="list-group-item bg-main main-font-nh"><h6>Profile</h6></li>
+                                    <li onclick="location.href='{{ url_for('main.home') }}'" class="list-group-item bg-main main-font-nh"><h6>Notifications</h6></li>
+                                    <li onclick="location.href='{{ url_for('main.home') }}'" class="list-group-item lgl-last bg-main main-font-nh"><h6>Settings</h6></li>
+                                {% else %}
+                                    <li class="list-group-item bg-main main-font-nh"><h3>Join Today</h3></li>
+                                    <li onclick="location.href='{{ url_for('users.signup') }}'" class="list-group-item bg-main main-font-nh"><h6>Sign Up</h6></li>
+                                {% endif %}
                             </ul>
+                            {% if current_user.is_authenticated %}
+                                <div class="col text-center">
+                                    <button type="button" class="btn btn-outline-primary btn-lg m-2 center" style="width: 80%" data-bs-toggle="modal" data-bs-target="#qwippModal">Qwipp</button>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 {% endif %}
+<!--                {% with messages = get_flashed_messages(with_categories=true) %}-->
+<!--                    {% if messages %}-->
+<!--                        {% for category, message in messages %}-->
+<!--                            <div class="position-absolute alert alert-{{ category }}">-->
+<!--                                {{ message }}-->
+<!--                            </div>-->
+<!--                        {% endfor %}-->
+<!--                    {% endif %}-->
+<!--                {% endwith %}-->
                 <div class="col-md-6 center-content">
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                        {% if messages %}
-                            {% for category, message in messages %}
-                                <div class="alert alert-{{ category }}">
-                                    {{ message }}
-                                </div>
-                            {% endfor %}
-                        {% endif %}
-                    {% endwith %}
+                    {% if current_user.is_authenticated %}
+                        <div class="modal fade" id="qwippModal" tabindex="-1" aria-labelledby="qwippModalLabel" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModalLabel">Create Qwipp</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <div class="modal-footer">
+                                <form action="{{ url_for('main.home') }}" method="POST">
+                                    <input class="btn btn-outline-primary" type="submit" value="Qwipp It">
+                                </form>
+                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Close</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                    {% endif %}
                     {% block content %}{% endblock %}
                 </div>
                 {% if request.MOBILE == False %}
@@ -85,5 +112,10 @@
                 {% endif %}
             </div>
         </main>
+
+        <!-- JS -->
+        <script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js" integrity="sha512-6UofPqm0QupIL0kzS/UIzekR73/luZdC6i/kXDbWnLOJoqwklBK6519iUnShaYceJ0y4FaiPtX/hRnV/X/xlUQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
     </body>
 </html>

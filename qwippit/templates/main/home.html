@@ -11,39 +11,42 @@
                 </div>
             </div>
             <div class="qwipp-feed">
-                <div class="create-input create-qwipp row content-section">
-                    <form method="POST" action="">
-                      {{ qwipp_form.hidden_tag() }}
-                          <div class="form-group">
-                              {% if qwipp_form.content.errors %}
-                                {{ qwipp_form.content(class="form-control form-control-lg is-invalid") }}
-                                <div class="invalid-feedback">
-                                    {% for error in qwipp_form.content.errors %}
-                                        <span>{{ error }}</span>
-                                    {% endfor %}
-                                </div>
-                              {% else %}
-                                {{ qwipp_form.content(id="qwipp-text-area", rows="5", class="form-control form-control-lg") }}
-                              {% endif %}
-                              <span id="qwipp-form-count" class="main-font-nh">0</span>
-                              <span id="qwipp-form-count-maximum" class="main-font-nh">/ 256</span>
+                {% if current_user.is_authenticated %}
+                    <div class="create-input create-qwipp row content-section">
+                        <form method="POST" action="">
+                          {{ qwipp_form.hidden_tag() }}
+                              <div class="form-group">
+                                  {% if qwipp_form.content.errors %}
+                                    {{ qwipp_form.content(class="form-control form-control-lg is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in qwipp_form.content.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                  {% else %}
+                                    {{ qwipp_form.content(id="qwipp-text-area", rows="5", class="form-control form-control-lg") }}
+                                  {% endif %}
+                                  <span id="qwipp-form-count" class="main-font-nh">0</span>
+                                  <span id="qwipp-form-count-maximum" class="main-font-nh">/ 256</span>
+                              </div>
+                          </fieldset>
+                          <div class="form-group mt-4">
+                              {{ qwipp_form.submit(class="btn btn-outline-info") }}
                           </div>
-                      </fieldset>
-                      <div class="form-group mt-4">
-                          {{ qwipp_form.submit(class="btn btn-outline-info") }}
-                      </div>
-                  </form>
-                </div>
+                      </form>
+                    </div>
+                {% endif %}
                 {% for qwipp in qwipps %}
                     <article onclick="location.href='{{ url_for('main.home') }}'" class="row content-section">
                         <div class="d-flex media">
-                            <img class="me-3 rounded-circle article-img border border-highlight" src="{{ url_for('static', filename='img/logo.png') }}">
+                            <img class="me-3 rounded-circle article-img border border-highlight" src="{{ url_for('static', filename='profile_pics/' + qwipp.author.image_file) }}">
                             <div class="media-body">
                                 <div class="article-metadata">
-                                    <a class="author-link mr-2" href="{{ url_for('main.home') }}">{{ qwipp.author }}</a>
+                                    <a class="author-link mr-2" href="{{ url_for('users.profile', username=qwipp.author.username) }}">{{ qwipp.author.displayname }}</a>
+                                    <small class="text-muted">@{{ qwipp.author.username }}</small>
                                 </div>
                                 <p class="article-content">{{ qwipp.content }}</p>
-                                <small class="text-muted">February 28, 2023</small>
+                                <small class="date-time text-muted">{{ qwipp.date_posted.strftime('%b %d') }}</small>
                             </div>
                         </div>
                     </article>
