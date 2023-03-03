@@ -4,6 +4,14 @@ body {
     margin-top: 5rem;
 }
 
+.rounded-circle {
+    background-color: #31263B;
+}
+
+p {
+    margin-bottom: 0;
+}
+
 a {
     text-decoration: none;
 }
@@ -62,14 +70,16 @@ a {
     border-bottom-left-radius: 1rem;
     border-bottom: 0.15rem solid;
 
+    border-top: 0.15rem solid;
+
     border-color: #43374C;
+    margin-bottom: 2rem;
 }
 
 .center-content-top {
     text-align: center;
     border-top-right-radius: 1rem;
     border-top-left-radius: 1rem;
-    border-top: 0.15rem solid;
     border-bottom: 0.15rem solid;
     border-color: #43374C;
 }
@@ -78,7 +88,6 @@ a {
     color: #54485D;
     cursor: pointer;
     padding: 1rem;
-    margin-bottom: -1px;
     background-color: #31263B;
     transition: background-color 0.25s ease, color 0.25s ease;
 }
@@ -118,12 +127,6 @@ a {
   white-space: pre-line;
 }
 
-.article-img {
-  height: 65px;
-  width: 65px;
-  margin-right: 16px;
-}
-
 .article-metadata {
   padding-bottom: 1px;
   margin-bottom: 4px;
@@ -131,8 +134,8 @@ a {
 
 .content-section {
     cursor: pointer;
-    padding-top: 3rem;
-    padding-bottom: 3rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
     border-bottom: 0.15rem solid;
     border-color: #43374C;
     background-color: #31263B;
@@ -163,6 +166,16 @@ a {
 
 #qwipp-text-area {
     resize: none;
+}
+
+.individual-qwipp {
+    border-top-right-radius: 1rem;
+    border-top-left-radius: 1rem;
+    cursor: auto;
+}
+
+.individual-qwipp:hover {
+    background-color: #31263B;
 }
 
 
@@ -210,7 +223,6 @@ a {
 .sign-info-section {
     border-top-right-radius: 1rem;
     border-top-left-radius: 1rem;
-    border-top: 0.15rem solid;
     border-color: #43374C;
 }
 
@@ -267,6 +279,43 @@ input:-webkit-autofill:focus {
     opacity: 1;
 }
 
+/* profile */
+
+.profile-content {
+    border-top-right-radius: 1rem;
+    border-top-left-radius: 1rem;
+    border-color: #43374C;
+}
+
+.profile-center-content-top {
+    text-align: center;
+    border-top: 0.15rem solid;
+    border-bottom: 0.15rem solid;
+    border-color: #43374C;
+}
+
+.profile-button {
+    text-align: right;
+}
+
+.profile-feed-qwill {
+    border-left: 0.15rem solid;
+    border-color: #43374C;
+}
+
+.profile-picture {
+    margin-top: -4.25rem;
+}
+
+.banner-image {
+    border-top-right-radius: 1rem;
+    border-top-left-radius: 1rem;
+    border-bottom: 0.15rem solid;
+    padding: 0;
+    vertical-align: middle;
+    border-color: #43374C;
+}
+
 /*  primary color change */
 
 .alert-primary {
@@ -311,6 +360,7 @@ button.bg-primary:focus {
     color: #43374C;
     background-color: #EFDBF9;
     border-color: #EFDBF9;
+    transition: background-color 0.25s ease;
 }
 
 .btn-primary:hover {
@@ -320,7 +370,7 @@ button.bg-primary:focus {
 }
 
 .btn-primary:focus, .btn-primary.focus {
-    box-shadow: 0 0 0 0.2rem rgba(239, 219, 249, 0.5);
+    box-shadow: 0 0 0 0.2rem rgba(67 55 76, 0.5);
 }
 
 .btn-primary.disabled, .btn-primary:disabled {

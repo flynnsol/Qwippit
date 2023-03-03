@@ -1,26 +1,48 @@
 {% extends "main/layout.html" %}
 {% block content %}
-    {% for qwipp in qwipps %}
-        <div class="profile-content">
-
+        <div class="profile-content row">
+            <img class="banner-image" height="200px" src="{{ url_for('static', filename='banner_pics/' + user.image_file) }}">
+            <div class="profile-info col">
+                <img class="me-3 rounded-circle border border-highlight profile-picture" width="130px" height="130px" src="{{ url_for('static', filename='profile_pics/' + user.image_file) }}">
+                <div class="profile-name">
+                    <h5 class="main-font-nh mr-2">{{ user.displayname }}</h5>
+                    <h6 class="text-muted">@{{ user.username }}</h6>
+                </div>
+                <div class="bio">
+                    <small class="main-font-nh">
+                    </small>
+                </div>
+            </div>
+            {% if user == current_user %}
+                <div class="profile-button edit-profile col">
+                    <button type="button" class="btn btn-outline-primary m-2">Edit Profile</button>
+                </div>
+            {% else %}
+                <div class="profile-button follow col">
+                    <button type="button" class="btn btn-outline-primary m-2">Follow</button>
+                </div>
+            {% endif %}
         </div>
-        <div class="row center-content-top">
-            <div class="col feed-option feed-qwipp active">
+        <div class="row profile-center-content-top">
+            <div class="col feed-option active">
                 <h4>Qwipp</h4>
             </div>
-            <div class="col feed-option feed-qwill">
+            <div class="col feed-option profile-feed-qwill">
                 <h4>Qwill</h4>
             </div>
         </div>
-        <article onclick="location.href='{{ url_for('main.home') }}'" class="row content-section">
+    {% for qwipp in qwipps %}
+        <article onclick="location.href='{{ url_for('users.qwipp', username=qwipp.author.username, qwipp_id=qwipp.id) }}'" class="row content-section">
             <div class="d-flex media">
-                <img class="me-3 rounded-circle article-img border border-highlight" src="{{ url_for('static', filename='profile_pics/' + qwipp.author.image_file) }}">
+                <img class="me-3 rounded-circle border border-highlight" width="65px" height="65px" src="{{ url_for('static', filename='profile_pics/' + qwipp.author.image_file) }}">
                 <div class="media-body">
                     <div class="article-metadata">
                         <a class="author-link mr-2" href="{{ url_for('users.profile', username=qwipp.author.username) }}">{{ qwipp.author.displayname }}</a>
                         <small class="text-muted">@{{ qwipp.author.username }}</small>
                     </div>
-                    <p class="article-content">{{ qwipp.content }}</p>
+                    <div class="content">
+                        <p class="article-content">{{ qwipp.content }}</p>
+                    <div>
                     <small class="date-time text-muted">{{ qwipp.date_posted.strftime('%b %d') }}</small>
                 </div>
             </div>

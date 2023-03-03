@@ -12,7 +12,7 @@
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
 
         {% if title %}
-            <title>{{ title }} / Qwippit</title>
+            <title>{{ title }} - Qwippit</title>
         {% else %}
             <title>Qwippit</title>
         {% endif %}
@@ -61,21 +61,12 @@
                             </ul>
                             {% if current_user.is_authenticated %}
                                 <div class="col text-center">
-                                    <button type="button" class="btn btn-outline-primary btn-lg m-2 center" style="width: 80%" data-bs-toggle="modal" data-bs-target="#qwippModal">Qwipp</button>
+                                    <button type="button" class="btn btn-outline-primary btn-lg m-2" style="width: 80%" data-bs-toggle="modal" data-bs-target="#qwippModal">Qwipp</button>
                                 </div>
                             {% endif %}
                         </div>
                     </div>
                 {% endif %}
-<!--                {% with messages = get_flashed_messages(with_categories=true) %}-->
-<!--                    {% if messages %}-->
-<!--                        {% for category, message in messages %}-->
-<!--                            <div class="position-absolute alert alert-{{ category }}">-->
-<!--                                {{ message }}-->
-<!--                            </div>-->
-<!--                        {% endfor %}-->
-<!--                    {% endif %}-->
-<!--                {% endwith %}-->
                 <div class="col-md-6 center-content">
                     {% if current_user.is_authenticated %}
                         <div class="modal fade" id="qwippModal" tabindex="-1" aria-labelledby="qwippModalLabel" aria-hidden="true">

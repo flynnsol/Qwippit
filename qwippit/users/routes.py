@@ -50,4 +50,12 @@ def profile(username):
     user = User.query.filter_by(username=username).first_or_404()
     qwipps = Qwipp.query.filter_by(author=user)\
         .order_by(Qwipp.date_posted.desc())
-    return render_template('users/profile.html', qwipps=qwipps, user=user, title='@' + username)
+    return render_template('users/profile.html', qwipps=qwipps, user=user, title=user.displayname + " (@" + username + ")")
+
+
+# Qwipps
+@users.route("/<string:username>/qwipp/<int:qwipp_id>")
+def qwipp(username, qwipp_id):
+    user = User.query.filter_by(username=username).first_or_404()
+    qwipp = Qwipp.query.get_or_404(qwipp_id)
+    return render_template('qwipps/qwipp.html', title=user.displayname + " (@" + username + ")", qwipp=qwipp, user=user)
