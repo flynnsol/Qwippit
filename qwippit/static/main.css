@@ -116,11 +116,20 @@ a {
 .author-link {
     text-decoration: none;
     color: #EFDBF9;
-    transition: 0.15s ease color;
+    transition: 0.25s ease color;
 }
 
 .author-link:hover {
     color: #BEA7E5;
+}
+
+.author-link-nh {
+    text-decoration: none;
+    color: #EFDBF9;
+}
+
+.author-link-nh:hover {
+    color: #EFDBF9;
 }
 
 .article-content {
@@ -254,7 +263,9 @@ input:-webkit-autofill:focus {
 .error-section {
     border-top-right-radius: 1rem;
     border-top-left-radius: 1rem;
-    border-top: 0.15rem solid;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    text-align: center;
     border-color: #43374C;
 }
 
@@ -315,6 +326,16 @@ input:-webkit-autofill:focus {
     vertical-align: middle;
     border-color: #43374C;
 }
+
+.profile-empty-content-section {
+    cursor: auto;
+    text-align: center;
+}
+
+.profile-empty-content-section:hover {
+    background-color: #31263B;
+}
+
 
 /*  primary color change */
 

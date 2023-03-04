@@ -1,4 +1,5 @@
 from flask_login import current_user, login_user, logout_user
+from sqlalchemy import func
 
 from qwippit import bcrypt, db
 from qwippit.models import User, Qwipp, Qwill
@@ -47,15 +48,15 @@ def signout():
 
 @users.route("/<string:username>")
 def profile(username):
-    user = User.query.filter_by(username=username).first_or_404()
+    user = User.query.filter(func.lower(User.username) == func.lower(username)).first_or_404()
     qwipps = Qwipp.query.filter_by(author=user)\
-        .order_by(Qwipp.date_posted.desc())
+        .order_by(Qwipp.date_posted.desc()).all()
     return render_template('users/profile.html', qwipps=qwipps, user=user, title=user.displayname + " (@" + username + ")")
 
 
 # Qwipps
 @users.route("/<string:username>/qwipp/<int:qwipp_id>")
 def qwipp(username, qwipp_id):
-    user = User.query.filter_by(username=username).first_or_404()
+    user = User.query.filter(func.lower(User.username) == func.lower(username)).first_or_404()
     qwipp = Qwipp.query.get_or_404(qwipp_id)
     return render_template('qwipps/qwipp.html', title=user.displayname + " (@" + username + ")", qwipp=qwipp, user=user)

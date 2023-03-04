@@ -30,6 +30,7 @@
                         <!-- Right Side -->
                         {% if current_user.is_authenticated %}
                             <div class="navbar-nav ms-auto">
+                                <a class="nav-item nav-link main-font btn btn-outline-primary" href="{{ url_for('main.home') }}">Qwipp</a>
                                 <a class="nav-item nav-link main-font btn btn-outline-primary" href="{{ url_for('users.signout') }}">Sign Out</a>
                             </div>
                         {% else %}
@@ -59,33 +60,10 @@
                                     <li onclick="location.href='{{ url_for('users.signup') }}'" class="list-group-item bg-main main-font-nh"><h6>Sign Up</h6></li>
                                 {% endif %}
                             </ul>
-                            {% if current_user.is_authenticated %}
-                                <div class="col text-center">
-                                    <button type="button" class="btn btn-outline-primary btn-lg m-2" style="width: 80%" data-bs-toggle="modal" data-bs-target="#qwippModal">Qwipp</button>
-                                </div>
-                            {% endif %}
                         </div>
                     </div>
                 {% endif %}
                 <div class="col-md-6 center-content">
-                    {% if current_user.is_authenticated %}
-                        <div class="modal fade" id="qwippModal" tabindex="-1" aria-labelledby="qwippModalLabel" aria-hidden="true">
-                          <div class="modal-dialog">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <h5 class="modal-title" id="deleteModalLabel">Create Qwipp</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                              </div>
-                              <div class="modal-footer">
-                                <form action="{{ url_for('main.home') }}" method="POST">
-                                    <input class="btn btn-outline-primary" type="submit" value="Qwipp It">
-                                </form>
-                                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Close</button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                    {% endif %}
                     {% block content %}{% endblock %}
                 </div>
                 {% if request.MOBILE == False %}

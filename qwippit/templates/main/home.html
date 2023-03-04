@@ -4,10 +4,10 @@
         <div class="qwipp-qwill">
             <div class="row center-content-top">
                 <div class="col feed-option feed-qwipp active">
-                    <h4>Qwipp</h4>
+                    <h4>Qwipps</h4>
                 </div>
                 <div class="col feed-option feed-qwill">
-                    <h4>Qwill</h4>
+                    <h4>Qwills</h4>
                 </div>
             </div>
             <div class="qwipp-feed">
@@ -24,7 +24,7 @@
                                         {% endfor %}
                                     </div>
                                   {% else %}
-                                    {{ qwipp_form.content(id="qwipp-text-area", rows="5", class="form-control form-control-lg") }}
+                                    {{ qwipp_form.content(autofocus=True, id="qwipp-text-area", rows="5", class="form-control form-control-lg") }}
                                   {% endif %}
                                   <span id="qwipp-form-count" class="main-font-nh">0</span>
                                   <span id="qwipp-form-count-maximum" class="main-font-nh">/ 256</span>
