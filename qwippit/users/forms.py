@@ -1,6 +1,7 @@
 from flask_login import current_user
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed
+from sqlalchemy import func
 from wtforms import PasswordField, SubmitField, StringField, FileField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 
@@ -17,12 +18,12 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField('Sign Up')
 
     def validate_username(self, username):
-        user = User.query.filter_by(username=username.data.lower()).first()
+        user = User.query.filter(func.lower(User.username) == func.lower(username.data)).first()
         if user:
             raise ValidationError('That username is in use. Please choose a different username.')
 
     def validate_email(self, email):
-        user = User.query.filter_by(email=email.data.lower()).first()
+        user = User.query.filter(func.lower(User.email) == func.lower(email.data)).first()
         if user:
             raise ValidationError('That email is in use. Please choose a different email.')
 
@@ -36,8 +37,9 @@ class LoginForm(FlaskForm):
 
 
 class UpdateAccountForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired(), Length(min=2, max=20)])
+    username = StringField('Username', validators=[DataRequired(), Length(min=2, max=16)])
     email = StringField('Email', validators=[DataRequired(), Email()])
+    displayname = StringField('Display Name', validators=[DataRequired(), Length(min=2, max=20)])
     picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
     banner = FileField('Update Banner Image', validators=[FileAllowed(['jpg', 'png'])])
 
@@ -45,13 +47,13 @@ class UpdateAccountForm(FlaskForm):
 
     def validate_username(self, username):
         if username.data != current_user.username:
-            user = User.query.filter_by(username=username.data).first()
+            user = User.query.filter(func.lower(User.username) == func.lower(username.data)).first()
             if user:
                 raise ValidationError('That username is in use. Please choose a different username.')
 
     def validate_email(self, email):
         if email.data != current_user.email:
-            user = User.query.filter_by(email=email.data).first()
+            user = User.query.filter(func.lower(User.email) == func.lower(email.data)).first()
             if user:
                 raise ValidationError('That email is in use. Please choose a different email.')
 
@@ -62,7 +64,7 @@ class RequestResetForm(FlaskForm):
     submit = SubmitField('Request Password Reset')
 
     def validate_email(self, email):
-        user = User.query.filter_by(email=email.data).first()
+        user = User.query.filter(func.lower(User.email) == func.lower(email.data)).first()
         if user is None:
             raise ValidationError('There is no account with that email. Register an account first.')
 

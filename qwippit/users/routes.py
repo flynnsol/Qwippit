@@ -5,7 +5,8 @@ from qwippit import bcrypt, db
 from qwippit.models import User, Qwipp, Qwill
 from flask import Blueprint, redirect, flash, url_for, render_template, request
 
-from qwippit.users.forms import RegistrationForm, LoginForm
+from qwippit.users.forms import RegistrationForm, LoginForm, UpdateAccountForm
+from qwippit.users.utils import save_picture, save_banner
 
 users = Blueprint('users', __name__)
 
@@ -46,11 +47,31 @@ def signout():
     logout_user()
     return redirect(url_for('main.home'))
 
-@users.route("/<string:username>")
+@users.route("/<string:username>", methods=['GET', 'POST'])
 def profile(username):
     user = User.query.filter(func.lower(User.username) == func.lower(username)).first_or_404()
     qwipps = Qwipp.query.filter_by(author=user)\
         .order_by(Qwipp.date_posted.desc()).all()
+    if user.username == current_user.username:
+        form = UpdateAccountForm()
+        if form.validate_on_submit():
+            if form.picture.data:
+                picture_file = save_picture(form.picture.data)
+                current_user.image_file = picture_file
+            if form.banner.data:
+                banner_file = save_banner(form.banner.data)
+                current_user.banner_file = banner_file
+            current_user.username = form.username.data
+            current_user.displayname = form.displayname.data
+            current_user.email = form.email.data
+            db.session.commit()
+            flash('Account Information Updated.', 'success')
+            return redirect(url_for('users.profile', username=current_user.username))
+        elif request.method == 'GET':
+            form.username.data = current_user.username
+            form.displayname.data = current_user.displayname
+            form.email.data = current_user.email
+        return render_template('users/profile.html', qwipps=qwipps, user=user, title=user.displayname + " (@" + username + ")", form=form)
     return render_template('users/profile.html', qwipps=qwipps, user=user, title=user.displayname + " (@" + username + ")")
 
 
@@ -60,3 +81,8 @@ def qwipp(username, qwipp_id):
     user = User.query.filter(func.lower(User.username) == func.lower(username)).first_or_404()
     qwipp = Qwipp.query.get_or_404(qwipp_id)
     return render_template('qwipps/qwipp.html', title=user.displayname + " (@" + username + ")", qwipp=qwipp, user=user)
+
+
+@users.route("/<string:username>/update")
+def update_profile(username):
+    return redirect(url_for('users.profile', username=username))

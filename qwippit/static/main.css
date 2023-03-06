@@ -275,8 +275,13 @@ input:-webkit-autofill:focus {
     --bs-modal-bg: #31263B;
 }
 
+.modal-header {
+    border-bottom: none;
+}
+
 .modal-footer {
-    justify-content: flex-start;
+    border-top: none;
+    display: block;
 }
 
 .btn-close {
@@ -325,6 +330,7 @@ input:-webkit-autofill:focus {
     padding: 0;
     vertical-align: middle;
     border-color: #43374C;
+    object-fit: cover;
 }
 
 .profile-empty-content-section {
