@@ -31,7 +31,7 @@ def save_banner(form_banner):
     picture_fn = random_hex + f_ext
     picture_path = os.path.join(current_app.root_path, 'static/banner_pics', picture_fn)
 
-    output_size = (500, 300)
+    output_size = (1500, 500)
     i = PIL.Image.open(form_banner)
     i.thumbnail(output_size)
 
