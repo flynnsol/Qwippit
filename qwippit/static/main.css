@@ -239,7 +239,7 @@ a {
 /* btn */
 
 .btn {
-    --bs-btn-border-radius: 0.75rem;
+    --bs-btn-border-radius: 1rem;
 }
 
 /* Sign In/ Sign Up */
@@ -372,6 +372,13 @@ input:-webkit-autofill:focus {
 
 .alert {
     margin-top: 1rem;
+    border-radius: 1rem;
+}
+
+/* settings */
+
+.delete-user {
+    margin-left: none;
 }
 
 

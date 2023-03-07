@@ -58,6 +58,15 @@ class UpdateAccountForm(FlaskForm):
                 raise ValidationError('That email is in use. Please choose a different email.')
 
 
+class UpdatePasswordForm(FlaskForm):
+    currentpassword = PasswordField('Current Password', validators=[DataRequired(), Length(min=8)])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=8)])
+    confirm_password = PasswordField('Confirm Password',
+                                     validators=[DataRequired(), Length(min=8), EqualTo('password')])
+
+    submit = SubmitField('Change Password')
+
+
 class RequestResetForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
 

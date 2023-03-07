@@ -1,11 +1,11 @@
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_user, logout_user, login_required
 from sqlalchemy import func
 
 from qwippit import bcrypt, db
 from qwippit.models import User, Qwipp, Qwill
 from flask import Blueprint, redirect, flash, url_for, render_template, request
 
-from qwippit.users.forms import RegistrationForm, LoginForm, UpdateAccountForm
+from qwippit.users.forms import RegistrationForm, LoginForm, UpdateAccountForm, UpdatePasswordForm
 from qwippit.users.utils import save_picture, save_banner
 
 users = Blueprint('users', __name__)
@@ -32,7 +32,7 @@ def signin():
         return redirect(url_for('main.home'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        user = User.query.filter(func.lower(User.email) == func.lower(form.email.data)).first_or_404()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
@@ -43,37 +43,18 @@ def signin():
 
 
 @users.route("/signout")
+@login_required
 def signout():
     logout_user()
     return redirect(url_for('main.home'))
 
-@users.route("/<string:username>", methods=['GET', 'POST'])
+@users.route("/<string:username>")
 def profile(username):
     user = User.query.filter(func.lower(User.username) == func.lower(username)).first_or_404()
     qwipps = Qwipp.query.filter_by(author=user)\
         .order_by(Qwipp.date_posted.desc()).all()
     qwills = Qwill.query.filter_by(author=user) \
         .order_by(Qwill.date_posted.desc()).all()
-    if user.username == current_user.username:
-        form = UpdateAccountForm()
-        if form.validate_on_submit():
-            if form.picture.data:
-                picture_file = save_picture(form.picture.data)
-                current_user.image_file = picture_file
-            if form.banner.data:
-                banner_file = save_banner(form.banner.data)
-                current_user.banner_file = banner_file
-            current_user.username = form.username.data
-            current_user.displayname = form.displayname.data
-            current_user.email = form.email.data
-            db.session.commit()
-            flash('Account Information Updated.', 'success')
-            return redirect(url_for('users.profile', username=current_user.username))
-        elif request.method == 'GET':
-            form.username.data = current_user.username
-            form.displayname.data = current_user.displayname
-            form.email.data = current_user.email
-        return render_template('users/profile.html', qwipps=qwipps, qwills=qwills, user=user, title=user.displayname + " (@" + username + ")", form=form)
     return render_template('users/profile.html', qwipps=qwipps, qwills=qwills, user=user, title=user.displayname + " (@" + username + ")")
 
 
@@ -92,6 +73,50 @@ def qwill(username, qwill_id):
     return render_template('qwills/qwill.html', title=user.displayname + " (@" + username + ")", qwill=qwill, user=user)
 
 
-@users.route("/<string:username>/update")
-def update_profile(username):
-    return redirect(url_for('users.profile', username=username))
+@users.route("/settings", methods=['GET', 'POST'])
+@login_required
+def settings():
+    form = UpdateAccountForm()
+    if form.validate_on_submit():
+        if form.picture.data:
+            picture_file = save_picture(form.picture.data)
+            current_user.image_file = picture_file
+        if form.banner.data:
+            banner_file = save_banner(form.banner.data)
+            current_user.banner_file = banner_file
+        current_user.username = form.username.data
+        current_user.displayname = form.displayname.data
+        current_user.email = form.email.data
+        db.session.commit()
+        flash('Account Information Updated.', 'success')
+        return redirect(url_for('users.settings'))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.displayname.data = current_user.displayname
+        form.email.data = current_user.email
+    return render_template('main/settings.html', title="Settings", form=form)
+
+
+@users.route('/password', methods=['GET', 'POST'])
+def change_password():
+    form = UpdatePasswordForm()
+    if form.validate_on_submit():
+        if bcrypt.check_password_hash(current_user.password, form.currentpassword.data):
+            current_user.password = hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+            db.session.commit()
+            flash(f'Your password has been changed.', 'success')
+            return redirect(url_for('users.settings'))
+        else:
+            flash(f'Current password incorrect.', 'danger')
+            return redirect(url_for('users.change_password'))
+    return render_template('users/change_password.html', title="Change Password", form=form)
+
+@users.route('/<int:user_id>/delete', methods=['POST'])
+@login_required
+def delete_user(user_id):
+    user = User.query.get_or_404(user_id)
+    logout_user()
+    db.session.delete(user)
+    db.session.commit()
+    flash('Account Deleted.', 'success')
+    return redirect(url_for('main.home'))

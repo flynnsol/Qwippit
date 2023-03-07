@@ -54,7 +54,7 @@
                                     <li onclick="location.href='{{ url_for('main.home') }}'" class="list-group-item bg-main main-font-nh"><h6>Home</h6></li>
                                     <li onclick="location.href='{{ url_for('users.profile', username=current_user.username) }}'" class="list-group-item bg-main main-font-nh"><h6>Profile</h6></li>
                                     <li onclick="location.href='{{ url_for('main.home') }}'" class="list-group-item bg-main main-font-nh"><h6>Notifications</h6></li>
-                                    <li onclick="location.href='{{ url_for('main.home') }}'" class="list-group-item lgl-last bg-main main-font-nh"><h6>Settings</h6></li>
+                                    <li onclick="location.href='{{ url_for('users.settings') }}'" class="list-group-item lgl-last bg-main main-font-nh"><h6>Settings</h6></li>
                                 {% else %}
                                     <li class="list-group-item bg-main main-font-nh"><h3>Join Today</h3></li>
                                     <li onclick="location.href='{{ url_for('users.signup') }}'" class="list-group-item bg-main main-font-nh"><h6>Sign Up</h6></li>
