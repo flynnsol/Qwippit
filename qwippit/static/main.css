@@ -98,6 +98,7 @@ a {
 }
 
 .feed-option.active {
+    background-color: #372C41;
     color: #EFDBF9;
 }
 
@@ -177,6 +178,10 @@ a {
     resize: none;
 }
 
+#qwill-text-area {
+    resize: none;
+}
+
 .individual-qwipp {
     border-top-right-radius: 1rem;
     border-top-left-radius: 1rem;
@@ -184,6 +189,16 @@ a {
 }
 
 .individual-qwipp:hover {
+    background-color: #31263B;
+}
+
+.individual-qwill {
+    border-top-right-radius: 1rem;
+    border-top-left-radius: 1rem;
+    cursor: auto;
+}
+
+.individual-qwill:hover {
     background-color: #31263B;
 }
 
@@ -295,6 +310,17 @@ input:-webkit-autofill:focus {
     opacity: 1;
 }
 
+/* input file */
+
+::file-selector-button {
+  display: none;
+}
+
+.custom-file-upload {
+    cursor: pointer;
+}
+
+
 /* profile */
 
 .profile-content {
@@ -340,6 +366,12 @@ input:-webkit-autofill:focus {
 
 .profile-empty-content-section:hover {
     background-color: #31263B;
+}
+
+/* alert flash messages */
+
+.alert {
+    margin-top: 1rem;
 }
 
 

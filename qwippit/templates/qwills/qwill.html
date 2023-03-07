@@ -1,0 +1,18 @@
+{% extends "main/layout.html" %}
+{% block content %}
+  <article class="row content-section individual-qwill">
+    <div class="d-flex media">
+        <img class="me-3 rounded-circle border border-highlight" width="65px" height="65px" src="{{ url_for('static', filename='profile_pics/' + qwill.author.image_file) }}">
+        <div class="media-body">
+            <div class="article-metadata">
+                <a class="author-link mr-2" href="{{ url_for('users.profile', username=qwill.author.username) }}">{{ qwill.author.displayname }}</a>
+                <small class="text-muted">@{{ qwill.author.username }}</small>
+            </div>
+            <div class="content">
+                <p class="article-content">{{ qwill.content }}</p>
+            <div>
+            <small class="date-time text-muted">{{ qwill.date_posted.strftime('%b %d, %Y') }}</small>
+        </div>
+    </div>
+  </article>
+{% endblock content %}

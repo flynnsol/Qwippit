@@ -3,14 +3,14 @@
     <div>
         <div class="qwipp-qwill">
             <div class="row center-content-top">
-                <div class="col feed-option feed-qwipp active">
+                <div class="col feed-option feedoption feed-qwipp active" id="defaultOpen" onclick="QwippQwill(event, 'qwipp')">
                     <h4>Qwipps</h4>
                 </div>
-                <div class="col feed-option feed-qwill">
+                <div class="col feed-option feedoption feed-qwill" onclick="QwippQwill(event, 'qwill')">
                     <h4>Qwills</h4>
                 </div>
             </div>
-            <div class="qwipp-feed">
+            <div id="qwipp" class="feed">
                 {% if current_user.is_authenticated %}
                     <div class="create-input create-qwipp row content-section">
                         <form method="POST" action="">
@@ -54,10 +54,70 @@
                     </article>
                 {% endfor %}
             </div>
-            <div class="qwill-feed">
-                <div class="create-input create-qwill row content-section hidden">
+            <div id="qwill" class="feed">
+                {% if current_user.is_authenticated %}
+                    <div class="create-input create-qwill row content-section">
+                        <form method="POST" action="">
+                          {{ qwill_form.hidden_tag() }}
+                              <div class="form-group">
+                                  {{ qwill_form.title.label(class="form-control-label") }}
 
-                </div>
+                                  {% if qwill_form.title.errors %}
+                                    {{ qwill_form.title(class="form-control form-control-lg is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in qwill_form.title.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                  {% else %}
+                                    {{ qwill_form.title(class="form-control form-control-lg") }}
+                                  {% endif %}
+                              </div>
+                              <div class="form-group">
+                                  {{ qwill_form.content.label(class="form-control-label") }}
+
+                                  {% if qwill_form.content.errors %}
+                                    {{ qwill_form.content(class="form-control form-control-lg is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in qwill_form.content.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                  {% else %}
+                                    {{ qwill_form.content(autofocus=True, id="qwill-text-area", rows="5", class="form-control form-control-lg") }}
+                                  {% endif %}
+                              </div>
+                          </fieldset>
+                          <div class="form-group mt-4">
+                              {{ qwill_form.submit(class="btn btn-outline-info") }}
+                          </div>
+                      </form>
+                    </div>
+                {% endif %}
+                {% for qwill in qwills %}
+                    <article onclick="location.href='{{ url_for('users.qwill', username=qwill.author.username, qwill_id=qwill.id) }}'" class="row content-section">
+                        <div class="d-flex media">
+                            <img class="me-3 rounded-circle border border-highlight" width="65px" height="65px" src="{{ url_for('static', filename='profile_pics/' + qwill.author.image_file) }}">
+                            <div class="media-body">
+                                <div class="article-metadata">
+                                    <a class="author-link mr-2" href="{{ url_for('users.profile', username=qwill.author.username) }}">{{ qwill.author.displayname }}</a>
+                                    <small class="text-muted">@{{ qwill.author.username }}</small>
+                                </div>
+                                <div class="qwill-title">
+                                    <h2>{{ qwill.title }}</h2>
+                                </div>
+                                <div class="content">
+                                    {% if qwill.content | length > 256 %}
+                                        <p class="article-content">{{ qwill.content[0:256] }}<small class="text-muted">... Read More</small></p>
+                                    {% else %}
+                                        <p class="article-content">{{ qwill.content }}</p>
+                                    {% endif %}
+                                <div>
+                                <small class="date-time text-muted">{{ qwill.date_posted.strftime('%b %d, %Y') }}</small>
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
             </div>
         </div>
     </div>
@@ -70,5 +130,22 @@
 
           qwipp_counter.text(characterCount);
         });
+
+        function QwippQwill(evt, qwippQwill) {
+          var i, feed, feedoption;
+          feed = document.getElementsByClassName("feed");
+          for (i = 0; i < feed.length; i++) {
+            feed[i].style.display = "none";
+          }
+          feedoption = document.getElementsByClassName("feedoption");
+          for (i = 0; i < feedoption.length; i++) {
+            feedoption[i].className = feedoption[i].className.replace(" active", "");
+          }
+          document.getElementById(qwippQwill).style.display = "block";
+          evt.currentTarget.className += " active";
+        }
+
+        // Get the element with id="defaultOpen" and click on it
+        document.getElementById("defaultOpen").click();
     </script>
 {% endblock content %}

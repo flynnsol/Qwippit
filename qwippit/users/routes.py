@@ -52,6 +52,8 @@ def profile(username):
     user = User.query.filter(func.lower(User.username) == func.lower(username)).first_or_404()
     qwipps = Qwipp.query.filter_by(author=user)\
         .order_by(Qwipp.date_posted.desc()).all()
+    qwills = Qwill.query.filter_by(author=user) \
+        .order_by(Qwill.date_posted.desc()).all()
     if user.username == current_user.username:
         form = UpdateAccountForm()
         if form.validate_on_submit():
@@ -71,8 +73,8 @@ def profile(username):
             form.username.data = current_user.username
             form.displayname.data = current_user.displayname
             form.email.data = current_user.email
-        return render_template('users/profile.html', qwipps=qwipps, user=user, title=user.displayname + " (@" + username + ")", form=form)
-    return render_template('users/profile.html', qwipps=qwipps, user=user, title=user.displayname + " (@" + username + ")")
+        return render_template('users/profile.html', qwipps=qwipps, qwills=qwills, user=user, title=user.displayname + " (@" + username + ")", form=form)
+    return render_template('users/profile.html', qwipps=qwipps, qwills=qwills, user=user, title=user.displayname + " (@" + username + ")")
 
 
 # Qwipps
@@ -81,6 +83,13 @@ def qwipp(username, qwipp_id):
     user = User.query.filter(func.lower(User.username) == func.lower(username)).first_or_404()
     qwipp = Qwipp.query.get_or_404(qwipp_id)
     return render_template('qwipps/qwipp.html', title=user.displayname + " (@" + username + ")", qwipp=qwipp, user=user)
+
+
+@users.route("/<string:username>/qwill/<int:qwill_id>")
+def qwill(username, qwill_id):
+    user = User.query.filter(func.lower(User.username) == func.lower(username)).first_or_404()
+    qwill = Qwill.query.get_or_404(qwill_id)
+    return render_template('qwills/qwill.html', title=user.displayname + " (@" + username + ")", qwill=qwill, user=user)
 
 
 @users.route("/<string:username>/update")
