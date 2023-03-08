@@ -1,0 +1,35 @@
+{% extends "main/layout.html" %}
+{% block content %}
+  <div class="create-input create-qwipp row content-section edit-content">
+      <form method="POST" action="">
+        {{ qwipp_form.hidden_tag() }}
+            <div class="form-group">
+                {% if qwipp_form.content.errors %}
+                  {{ qwipp_form.content(class="form-control form-control-lg is-invalid") }}
+                  <div class="invalid-feedback">
+                      {% for error in qwipp_form.content.errors %}
+                          <span>{{ error }}</span>
+                      {% endfor %}
+                  </div>
+                {% else %}
+                  {{ qwipp_form.content(autofocus=True, id="qwipp-text-area", rows="5", class="form-control form-control-lg") }}
+                {% endif %}
+                <span id="qwipp-form-count" class="main-font-nh">0</span>
+                <span id="qwipp-form-count-maximum" class="main-font-nh">/ 256</span>
+            </div>
+        <div class="form-group mt-4">
+            {{ qwipp_form.submit(class="btn btn-outline-info") }}
+        </div>
+    </form>
+  </div>
+    <script>
+        $('textarea').keyup(function() {
+
+          var characterCount = $(this).val().length,
+              qwipp_counter = $('#qwipp-form-count'),
+              qwipp_counter_maximum = $('#qwipp-form-count-maximum')
+
+          qwipp_counter.text(characterCount);
+        });
+    </script>
+{% endblock content %}

@@ -29,7 +29,6 @@
                                   <span id="qwipp-form-count" class="main-font-nh">0</span>
                                   <span id="qwipp-form-count-maximum" class="main-font-nh">/ 256</span>
                               </div>
-                          </fieldset>
                           <div class="form-group mt-4">
                               {{ qwipp_form.submit(class="btn btn-outline-info") }}
                           </div>
@@ -84,10 +83,9 @@
                                         {% endfor %}
                                     </div>
                                   {% else %}
-                                    {{ qwill_form.content(autofocus=True, id="qwill-text-area", rows="5", class="form-control form-control-lg") }}
+                                    {{ qwill_form.content(autofocus=True, id="qwill-text-area", rows="10", class="form-control form-control-lg") }}
                                   {% endif %}
                               </div>
-                          </fieldset>
                           <div class="form-group mt-4">
                               {{ qwill_form.submit(class="btn btn-outline-info") }}
                           </div>
@@ -110,7 +108,13 @@
                                     {% if qwill.content | length > 256 %}
                                         <p class="article-content">{{ qwill.content[0:256] }}<small class="text-muted">... Read More</small></p>
                                     {% else %}
-                                        <p class="article-content">{{ qwill.content }}</p>
+                                        {% for line in qwill.content.split('\n') %}
+                                            {% if loop.index < 3 %}
+                                                <p class="article-content">{{ line }}</p>
+                                            {% elif loop.index==3 %}
+                                                <p class="article-content">{{ line }}<small class="text-muted">... Read More</small></p>
+                                            {% endif %}
+                                        {% endfor %}
                                     {% endif %}
                                 <div>
                                 <small class="date-time text-muted">{{ qwill.date_posted.strftime('%b %d, %Y') }}</small>

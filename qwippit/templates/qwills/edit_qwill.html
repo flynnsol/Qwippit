@@ -1,0 +1,39 @@
+{% extends "main/layout.html" %}
+{% block content %}
+    <div class="create-input create-qwill row edit-content">
+        <form method="POST" action="">
+          {{ qwill_form.hidden_tag() }}
+              <div class="form-group">
+                  {{ qwill_form.title.label(class="form-control-label") }}
+
+                  {% if qwill_form.title.errors %}
+                    {{ qwill_form.title(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in qwill_form.title.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                  {% else %}
+                    {{ qwill_form.title(class="form-control form-control-lg") }}
+                  {% endif %}
+              </div>
+              <div class="form-group">
+                  {{ qwill_form.content.label(class="form-control-label") }}
+
+                  {% if qwill_form.content.errors %}
+                    {{ qwill_form.content(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in qwill_form.content.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                  {% else %}
+                    {{ qwill_form.content(autofocus=True, id="qwill-text-area", rows="10", class="form-control form-control-lg") }}
+                  {% endif %}
+              </div>
+          <div class="form-group mt-4">
+              {{ qwill_form.submit(class="btn btn-outline-info") }}
+          </div>
+      </form>
+    </div>
+{% endblock content %}

@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, redirect, url_for
+from flask import Blueprint, request, render_template, redirect, url_for, flash
 from flask_login import current_user
 
 from qwippit.qwipps.forms import QwippForm, QwillForm
@@ -31,11 +31,13 @@ def home():
         qwill = Qwill(title=qwill_form.title.data, content=qwill_form.content.data, author=current_user)
         db.session.add(qwill)
         db.session.commit()
-        return redirect(url_for('main.home'))
+        flash('Qwill Created!', 'success')
+        return redirect(url_for('users.qwill', username=current_user.username, qwill_id=qwill.id))
     if qwipp_form.validate_on_submit():
         qwipp = Qwipp(content=qwipp_form.content.data, author=current_user)
         db.session.add(qwipp)
         db.session.commit()
+        flash('Qwipp Created!', 'success')
         return redirect(url_for('main.home'))
     qwipps = getQwipps()
     qwills = getQwills()

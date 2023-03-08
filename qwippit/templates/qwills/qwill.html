@@ -8,11 +8,35 @@
                 <a class="author-link mr-2" href="{{ url_for('users.profile', username=qwill.author.username) }}">{{ qwill.author.displayname }}</a>
                 <small class="text-muted">@{{ qwill.author.username }}</small>
             </div>
+            <div class="qwill-title">
+                <h2>{{ qwill.title }}</h2>
+            </div>
             <div class="content">
                 <p class="article-content">{{ qwill.content }}</p>
             <div>
             <small class="date-time text-muted">{{ qwill.date_posted.strftime('%b %d, %Y') }}</small>
         </div>
+        {% if qwill.author == current_user %}
+            <div>
+                <a class="btn btn-outline-primary mt-4" href="{{ url_for('users.update_qwill', username=current_user.username, qwill_id=qwill.id) }}">Update</a>
+                <button type="button" class="btn btn-outline-danger mt-4" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
+                <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="deleteModalLabel">Delete Qwill?</h5>
+                      </div>
+                      <div class="modal-footer d-flex">
+                        <form action="{{ url_for('users.delete_qwill', username=qwill.author, qwill_id=qwill.id) }}" method="POST">
+                            <input class="btn btn-outline-danger" type="submit" value="Delete">
+                        </form>
+                        <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        {% endif %}
     </div>
   </article>
 {% endblock content %}

@@ -3,8 +3,9 @@ from sqlalchemy import func
 
 from qwippit import bcrypt, db
 from qwippit.models import User, Qwipp, Qwill
-from flask import Blueprint, redirect, flash, url_for, render_template, request
+from flask import Blueprint, redirect, flash, url_for, render_template, request, abort
 
+from qwippit.qwipps.forms import QwippForm, QwillForm
 from qwippit.users.forms import RegistrationForm, LoginForm, UpdateAccountForm, UpdatePasswordForm
 from qwippit.users.utils import save_picture, save_banner
 
@@ -66,11 +67,72 @@ def qwipp(username, qwipp_id):
     return render_template('qwipps/qwipp.html', title=user.displayname + " (@" + username + ")", qwipp=qwipp, user=user)
 
 
+@users.route("/<string:username>/qwipp/<int:qwipp_id>/edit", methods=['GET', 'POST'])
+@login_required
+def update_qwipp(username, qwipp_id):
+    qwipp = Qwipp.query.get_or_404(qwipp_id)
+    if qwipp.author != current_user:
+        abort(403)
+    form = QwippForm()
+    if form.validate_on_submit():
+        qwipp.content = form.content.data
+        db.session.commit()
+        flash('Qwipp Updated!', 'success')
+        return redirect(url_for('users.qwipp', username=username, qwipp_id=qwipp.id))
+    elif request.method == 'GET':
+        form.content.data = qwipp.content
+    return render_template('qwipps/edit_qwipp.html', title=qwipp.author.displayname + " (@" + username + ")", qwipp=qwipp, qwipp_form=form)
+
+
+@users.route('/<string:username>/qwipp/<int:qwipp_id>/delete', methods=['POST'])
+@login_required
+def delete_qwipp(username, qwipp_id):
+    qwipp = Qwipp.query.get_or_404(qwipp_id)
+    if qwipp.author != current_user:
+        abort(403)
+    db.session.delete(qwipp)
+    db.session.commit()
+    flash('Qwipp Deleted', 'success')
+    return redirect(url_for('main.home'))
+
+
+# Qwills
 @users.route("/<string:username>/qwill/<int:qwill_id>")
 def qwill(username, qwill_id):
     user = User.query.filter(func.lower(User.username) == func.lower(username)).first_or_404()
     qwill = Qwill.query.get_or_404(qwill_id)
     return render_template('qwills/qwill.html', title=user.displayname + " (@" + username + ")", qwill=qwill, user=user)
+
+
+@users.route("/<string:username>/qwill/<int:qwill_id>/edit", methods=['GET', 'POST'])
+@login_required
+def update_qwill(username, qwill_id):
+    qwill = Qwill.query.get_or_404(qwill_id)
+    if qwill.author != current_user:
+        abort(403)
+    form = QwillForm()
+    if form.validate_on_submit():
+        qwill.title = form.title.data
+        qwill.content = form.content.data
+        db.session.commit()
+        flash('Qwill Updated!', 'success')
+        return redirect(url_for('users.qwill', username=username, qwill_id=qwill.id))
+    elif request.method == 'GET':
+        form.title.data = qwill.title
+        form.content.data = qwill.content
+    return render_template('qwills/edit_qwill.html', title=qwill.author.displayname + " (@" + username + ")", qwill=qwill, qwill_form=form)
+
+
+@users.route('/<string:username>/qwill/<int:qwill_id>/delete', methods=['POST'])
+@login_required
+def delete_qwill(username, qwill_id):
+    qwill = Qwill.query.get_or_404(qwill_id)
+    if qwill.author != current_user:
+        abort(403)
+    db.session.delete(qwill)
+    db.session.commit()
+    flash('Qwill Deleted', 'success')
+    return redirect(url_for('main.home'))
 
 
 @users.route("/settings", methods=['GET', 'POST'])
