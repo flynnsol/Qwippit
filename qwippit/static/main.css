@@ -210,6 +210,18 @@ a {
     border-bottom: none;
 }
 
+/* notifications */
+
+.notifications {
+    border-top-right-radius: 1rem;
+    border-top-left-radius: 1rem;
+    cursor: auto;
+}
+
+.notifications:hover {
+    background-color: #31263B;
+}
+
 
 /* Side Content Lists */
 

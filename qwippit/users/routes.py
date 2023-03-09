@@ -182,3 +182,9 @@ def delete_user(user_id):
     db.session.commit()
     flash('Account Deleted.', 'success')
     return redirect(url_for('main.home'))
+
+
+@users.route("/notifications")
+@login_required
+def notifications():
+    return render_template('users/notifications.html', title="Notifications")
