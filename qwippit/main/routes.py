@@ -23,6 +23,9 @@ def getQwills():
 
 
 @main.route("/", methods=['GET', 'POST'])
+def index():
+    return redirect(url_for('main.home'))
+
 @main.route("/home", methods=['GET', 'POST'])
 def home():
     qwipp_form = QwippForm()

@@ -210,15 +210,15 @@ a {
     border-bottom: none;
 }
 
-/* notifications */
+/* individual content */
 
-.notifications {
+.individual-content {
     border-top-right-radius: 1rem;
     border-top-left-radius: 1rem;
     cursor: auto;
 }
 
-.notifications:hover {
+.individual-content:hover {
     background-color: #31263B;
 }
 

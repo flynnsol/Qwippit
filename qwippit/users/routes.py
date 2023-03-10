@@ -6,8 +6,9 @@ from qwippit.models import User, Qwipp, Qwill
 from flask import Blueprint, redirect, flash, url_for, render_template, request, abort
 
 from qwippit.qwipps.forms import QwippForm, QwillForm
-from qwippit.users.forms import RegistrationForm, LoginForm, UpdateAccountForm, UpdatePasswordForm
-from qwippit.users.utils import save_picture, save_banner
+from qwippit.users.forms import RegistrationForm, LoginForm, UpdateAccountForm, UpdatePasswordForm, RequestResetForm, \
+    ResetPasswordForm
+from qwippit.users.utils import save_picture, save_banner, send_reset_email
 
 users = Blueprint('users', __name__)
 
@@ -188,3 +189,36 @@ def delete_user(user_id):
 @login_required
 def notifications():
     return render_template('users/notifications.html', title="Notifications")
+
+
+@users.route("/reset_password", methods=['GET', 'POST'])
+def reset_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.home'))
+    form = RequestResetForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        send_reset_email(user)
+        flash('Password reset instructions have been sent.', 'success')
+        return redirect(url_for('users.signin'))
+    return render_template('users/reset_request.html', title='Reset Password', form=form)
+
+
+@users.route("/reset_password/<token>", methods=['GET', 'POST'])
+def reset_token(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('main.home'))
+    user = User.verify_reset_token(token)
+    User.get_reset_token(user, 5)
+    if user is None:
+        flash('That is an invalid or expired token', 'warning')
+        return redirect(url_for('users.reset_request'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user.password = hashed_password
+        db.session.commit()
+        flash(f'Your password has been updated.', 'success')
+
+        return redirect(url_for('users.signin'))
+    return render_template('users/reset_token.html', title='Reset Password', form=form)
