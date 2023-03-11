@@ -35,23 +35,39 @@
                       </form>
                     </div>
                 {% endif %}
-                {% for qwipp in qwipps %}
-                    <article onclick="location.href='{{ url_for('users.qwipp', username=qwipp.author.username, qwipp_id=qwipp.id) }}'" class="row content-section">
-                        <div class="d-flex media">
-                            <img class="me-3 rounded-circle border border-highlight" width="65px" height="65px" src="{{ url_for('static', filename='profile_pics/' + qwipp.author.image_file) }}">
-                            <div class="media-body">
-                                <div class="article-metadata">
-                                    <a class="author-link mr-2" href="{{ url_for('users.profile', username=qwipp.author.username) }}">{{ qwipp.author.displayname }}</a>
-                                    <small class="text-muted">@{{ qwipp.author.username }}</small>
+                {% if qwipps |length != 0 %}
+                    {% for qwipp in qwipps %}
+                        <article onclick="location.href='{{ url_for('users.qwipp', username=qwipp.author.username, qwipp_id=qwipp.id) }}'" class="row content-section">
+                            <div class="d-flex media">
+                                <img class="me-3 rounded-circle border border-highlight" width="65px" height="65px" src="{{ url_for('static', filename='profile_pics/' + qwipp.author.image_file) }}">
+                                <div class="media-body">
+                                    <div class="article-metadata">
+                                        <a class="author-link mr-2" href="{{ url_for('users.profile', username=qwipp.author.username) }}">{{ qwipp.author.displayname }}</a>
+                                        <small class="text-muted">@{{ qwipp.author.username }}</small>
+                                    </div>
+                                    <div class="content">
+                                        <p class="article-content">{{ qwipp.content }}</p>
+                                    <div>
+                                    <small class="date-time text-muted">{{ qwipp.date_posted.strftime('%b %d, %Y') }}</small>
                                 </div>
+                            </div>
+                        </article>
+                    {% endfor %}
+                {% else %}
+                    <article class="row content-section profile-empty-content-section">
+                        <div class="media">
+                            <div class="media-body">
                                 <div class="content">
-                                    <p class="article-content">{{ qwipp.content }}</p>
+                                    {% if current_user.is_authenticated %}
+                                        <h4 class="article-content">Follow creators and interact with Qwipps to fill this feed!</h4>
+                                    {% else %}
+                                        <h4 class="article-content">Sign In to Follow creators and fill this feed!</h4>
+                                    {% endif %}
                                 <div>
-                                <small class="date-time text-muted">{{ qwipp.date_posted.strftime('%b %d, %Y') }}</small>
                             </div>
                         </div>
                     </article>
-                {% endfor %}
+                {% endif %}
             </div>
             <div id="qwill" class="feed">
                 {% if current_user.is_authenticated %}
@@ -92,36 +108,52 @@
                       </form>
                     </div>
                 {% endif %}
-                {% for qwill in qwills %}
-                    <article onclick="location.href='{{ url_for('users.qwill', username=qwill.author.username, qwill_id=qwill.id) }}'" class="row content-section">
-                        <div class="d-flex media">
-                            <img class="me-3 rounded-circle border border-highlight" width="65px" height="65px" src="{{ url_for('static', filename='profile_pics/' + qwill.author.image_file) }}">
+                {% if qwills |length != 0 %}
+                    {% for qwill in qwills %}
+                        <article onclick="location.href='{{ url_for('users.qwill', username=qwill.author.username, qwill_id=qwill.id) }}'" class="row content-section">
+                            <div class="d-flex media">
+                                <img class="me-3 rounded-circle border border-highlight" width="65px" height="65px" src="{{ url_for('static', filename='profile_pics/' + qwill.author.image_file) }}">
+                                <div class="media-body">
+                                    <div class="article-metadata">
+                                        <a class="author-link mr-2" href="{{ url_for('users.profile', username=qwill.author.username) }}">{{ qwill.author.displayname }}</a>
+                                        <small class="text-muted">@{{ qwill.author.username }}</small>
+                                    </div>
+                                    <div class="qwill-title">
+                                        <h2>{{ qwill.title }}</h2>
+                                    </div>
+                                    <div class="content">
+                                        {% if qwill.content | length > 256 %}
+                                            <p class="article-content">{{ qwill.content[0:256] }}<small class="text-muted">... Read More</small></p>
+                                        {% else %}
+                                            {% for line in qwill.content.split('\n') %}
+                                                {% if loop.index < 3 %}
+                                                    <p class="article-content">{{ line }}</p>
+                                                {% elif loop.index==3 %}
+                                                    <p class="article-content">{{ line }}<small class="text-muted">... Read More</small></p>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endif %}
+                                    <div>
+                                    <small class="date-time text-muted">{{ qwill.date_posted.strftime('%b %d, %Y') }}</small>
+                                </div>
+                            </div>
+                        </article>
+                    {% endfor %}
+                {% else %}
+                    <article class="row content-section profile-empty-content-section">
+                        <div class="media">
                             <div class="media-body">
-                                <div class="article-metadata">
-                                    <a class="author-link mr-2" href="{{ url_for('users.profile', username=qwill.author.username) }}">{{ qwill.author.displayname }}</a>
-                                    <small class="text-muted">@{{ qwill.author.username }}</small>
-                                </div>
-                                <div class="qwill-title">
-                                    <h2>{{ qwill.title }}</h2>
-                                </div>
                                 <div class="content">
-                                    {% if qwill.content | length > 256 %}
-                                        <p class="article-content">{{ qwill.content[0:256] }}<small class="text-muted">... Read More</small></p>
+                                    {% if current_user.is_authenticated %}
+                                        <h4 class="article-content">Follow creators and interact with Qwills to fill this feed!</h4>
                                     {% else %}
-                                        {% for line in qwill.content.split('\n') %}
-                                            {% if loop.index < 3 %}
-                                                <p class="article-content">{{ line }}</p>
-                                            {% elif loop.index==3 %}
-                                                <p class="article-content">{{ line }}<small class="text-muted">... Read More</small></p>
-                                            {% endif %}
-                                        {% endfor %}
+                                        <h4 class="article-content">Sign In to Follow creators and fill this feed!</h4>
                                     {% endif %}
                                 <div>
-                                <small class="date-time text-muted">{{ qwill.date_posted.strftime('%b %d, %Y') }}</small>
                             </div>
                         </div>
                     </article>
-                {% endfor %}
+                {% endif %}
             </div>
         </div>
     </div>

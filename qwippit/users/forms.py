@@ -83,3 +83,14 @@ class ResetPasswordForm(FlaskForm):
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), Length(8), EqualTo('password')])
 
     submit = SubmitField('Reset Password')
+
+
+class RequestVerifyForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+
+    submit = SubmitField('Resend Email Verification')
+
+    def validate_email(self, email):
+        user = User.query.filter(func.lower(User.email) == func.lower(email.data)).first()
+        if user is None:
+            raise ValidationError('There is no account with that email. Register an account first.')

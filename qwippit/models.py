@@ -1,5 +1,6 @@
 import jwt
 from datetime import datetime
+import time
 from qwippit import db, login_manager
 from flask_login import UserMixin
 from flask import current_app
@@ -25,6 +26,8 @@ class User(db.Model, UserMixin):
     banner_file = db.Column(db.String(20), nullable=False, default='default.png')
     password = db.Column(db.String(60), nullable=False)
 
+    emailverified = db.Column(db.Boolean(), nullable=False, default=False)
+
     followed = db.relationship('User', secondary=followers, primaryjoin=(followers.c.follower_id == id), secondaryjoin=(followers.c.followed_id == id), backref=db.backref('followers', lazy='dynamic'), lazy='dynamic')
 
     qwipps = db.relationship('Qwipp', backref='author', lazy=True)
@@ -33,7 +36,8 @@ class User(db.Model, UserMixin):
     def get_reset_token(self, expires_sec=900):
         reset_token = jwt.encode(
             {
-                "user_id": self.id
+                "user_id": self.id,
+                "timestamp": time.time()
             },
             current_app.config['SECRET_KEY'],
             algorithm="HS256"
@@ -41,7 +45,7 @@ class User(db.Model, UserMixin):
         return reset_token
 
     @staticmethod
-    def verify_reset_token(token):
+    def verify_token(token):
         try:
             user_id = jwt.decode(
                 token,
@@ -51,6 +55,17 @@ class User(db.Model, UserMixin):
         except:
             return None
         return User.query.get(user_id)
+
+    def get_email_token(self, expires_sec=900):
+        verify_email = jwt.encode(
+            {
+                "user_id": self.id,
+                "timestamp": time.time()
+            },
+            current_app.config['SECRET_KEY'],
+            algorithm="HS256"
+        )
+        return verify_email
 
     def follow(self, user):
         if not self.is_following(user):

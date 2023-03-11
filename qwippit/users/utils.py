@@ -59,3 +59,17 @@ To reset your password, visit the following link:
 If you did not make this request then ignore this email and no changes will be made.
     '''
     mail.send(msg)
+
+
+def send_verify_email(user):
+    token = user.get_email_token()
+    msg = Message('Verify Your Email',
+                  sender='support@qwippit.com',
+                  recipients=[user.email])
+    msg.body = f'''
+To verify your email, visit the following link:
+{url_for('users.verify_email', token=token, _external=True)}
+
+If you did not make this request then ignore this email and the account will not be verified.
+    '''
+    mail.send(msg)

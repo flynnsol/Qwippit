@@ -7,14 +7,15 @@ from flask import Blueprint, redirect, flash, url_for, render_template, request,
 
 from qwippit.qwipps.forms import QwippForm, QwillForm
 from qwippit.users.forms import RegistrationForm, LoginForm, UpdateAccountForm, UpdatePasswordForm, RequestResetForm, \
-    ResetPasswordForm
-from qwippit.users.utils import save_picture, save_banner, send_reset_email
+    ResetPasswordForm, RequestVerifyForm
+from qwippit.users.utils import save_picture, save_banner, send_reset_email, send_verify_email
 
 users = Blueprint('users', __name__)
 
 
 # token blacklist
-blacklist = set()
+reset_blacklist = set()
+verify_blacklist = set()
 
 @users.route("/signup", methods=['GET', 'POST'])
 def signup():
@@ -26,7 +27,8 @@ def signup():
         user = User(username=form.username.data, displayname=form.displayname.data, email=form.email.data, password=hashed_password)
         db.session.add(user)
         db.session.commit()
-        flash(f'Your account has been created! You are now able to sign in.', 'success')
+        send_verify_email(user)
+        flash(f'Your account has been created! A link has been sent to verify your email address.', 'success')
         return redirect(url_for('users.signin'))
     return render_template('users/signup.html', title='Sign Up', form=form)
 
@@ -38,12 +40,15 @@ def signin():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter(func.lower(User.email) == func.lower(form.email.data)).first_or_404()
-        if user and bcrypt.check_password_hash(user.password, form.password.data):
-            login_user(user, remember=form.remember.data)
-            next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('main.home'))
+        if user.emailverified:
+            if user and bcrypt.check_password_hash(user.password, form.password.data):
+                login_user(user, remember=form.remember.data)
+                next_page = request.args.get('next')
+                return redirect(next_page) if next_page else redirect(url_for('main.home'))
+            else:
+                flash('Sign In Unsuccessful. Please check email and password.', 'danger')
         else:
-            flash('Sign In Unsuccessful. Please check email and password.', 'danger')
+            flash('Please verify your email address.', 'danger')
     return render_template('users/signin.html', title='Sign In', form=form)
 
 
@@ -212,11 +217,11 @@ def reset_token(token):
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
 
-    if token in blacklist:
+    if token in reset_blacklist:
         flash('That token has already been used.', 'danger')
         return render_template('errors/400.html', title="Token Used (400)")
 
-    user = User.verify_reset_token(token)
+    user = User.verify_token(token)
     if user is None:
         flash('That is an invalid or expired token', 'warning')
         return redirect(url_for('users.reset_request'))
@@ -226,6 +231,40 @@ def reset_token(token):
         user.password = hashed_password
         db.session.commit()
         flash(f'Your password has been updated.', 'success')
-        blacklist.add(token)
+        reset_blacklist.add(token)
         return redirect(url_for('users.signin'))
     return render_template('users/reset_token.html', title='Reset Password', form=form)
+
+
+@users.route("/verify_email/<token>")
+def verify_email(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('main.home'))
+
+    if token in verify_blacklist:
+        flash('That token has already been used.', 'danger')
+        return render_template('errors/400.html', title="Token Used (400)")
+
+    user = User.verify_token(token)
+    if user is None:
+        flash('That is an invalid or expired token', 'warning')
+        return redirect(url_for('users.signin'))
+    else:
+        flash('Email successfully verified! You can now Sign In!', 'success')
+        user.emailverified = True
+        db.session.commit()
+        verify_blacklist.add(token)
+        return redirect(url_for('users.signin'))
+
+
+@users.route("/verify_email", methods=['GET', 'POST'])
+def verify_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.home'))
+    form = RequestVerifyForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        send_verify_email(user)
+        flash('Email Verification link has been sent.', 'success')
+        return redirect(url_for('users.signin'))
+    return render_template('users/verify_request.html', title='Verify Email', form=form)
