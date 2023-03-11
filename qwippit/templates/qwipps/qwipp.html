@@ -12,11 +12,14 @@
                 <p class="article-content">{{ qwipp.content }}</p>
             <div>
             <small class="date-time text-muted">{{ qwipp.date_posted.strftime('%b %d, %Y') }}</small>
+            {% if qwipp.date_edited != None %}
+                <small class="date-time text-muted ms-4">Edited: {{ qwipp.date_edited.strftime('%b %d, %Y') }}</small>
+            {% endif %}
         </div>
         {% if qwipp.author == current_user %}
             <div>
                 <a class="btn btn-outline-primary mt-4" href="{{ url_for('users.update_qwipp', username=current_user.username, qwipp_id=qwipp.id) }}">Update</a>
-                <button type="button" class="btn btn-outline-danger mt-4" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
+                <button type="button" class="btn btn-danger mt-4 ms-2" data-bs-toggle="modal" data-bs-target="#deleteModal">Delete</button>
                 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
                   <div class="modal-dialog">
                     <div class="modal-content">
@@ -25,7 +28,7 @@
                       </div>
                       <div class="modal-footer d-flex">
                         <form action="{{ url_for('users.delete_qwipp', username=qwipp.author, qwipp_id=qwipp.id) }}" method="POST">
-                            <input class="btn btn-outline-danger" type="submit" value="Delete">
+                            <input class="btn btn-danger" type="submit" value="Delete">
                         </form>
                         <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Close</button>
                       </div>

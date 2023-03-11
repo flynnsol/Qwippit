@@ -1,5 +1,6 @@
 from flask_login import current_user, login_user, logout_user, login_required
 from sqlalchemy import func
+from datetime import datetime
 
 from qwippit import bcrypt, db
 from qwippit.models import User, Qwipp, Qwill
@@ -85,6 +86,7 @@ def update_qwipp(username, qwipp_id):
     form = QwippForm()
     if form.validate_on_submit():
         qwipp.content = form.content.data
+        qwipp.date_edited = datetime.utcnow()
         db.session.commit()
         flash('Qwipp Updated!', 'success')
         return redirect(url_for('users.qwipp', username=username, qwipp_id=qwipp.id))
@@ -123,6 +125,7 @@ def update_qwill(username, qwill_id):
     if form.validate_on_submit():
         qwill.title = form.title.data
         qwill.content = form.content.data
+        qwill.date_edited = datetime.utcnow()
         db.session.commit()
         flash('Qwill Updated!', 'success')
         return redirect(url_for('users.qwill', username=username, qwill_id=qwill.id))

@@ -48,6 +48,9 @@
                                 <p class="article-content">{{ qwipp.content }}</p>
                             <div>
                             <small class="date-time text-muted">{{ qwipp.date_posted.strftime('%b %d, %Y') }}</small>
+                            {% if qwipp.date_edited != None %}
+                                <small class="date-time text-muted ms-4">Edited: {{ qwipp.date_edited.strftime('%b %d, %Y') }}</small>
+                            {% endif %}
                         </div>
                     </div>
                 </article>
@@ -90,6 +93,9 @@
                                 {% endif %}
                             <div>
                             <small class="date-time text-muted">{{ qwill.date_posted.strftime('%b %d, %Y') }}</small>
+                            {% if qwill.date_edited != None %}
+                                <small class="date-time text-muted ms-4">Edited: {{ qwill.date_edited.strftime('%b %d, %Y') }}</small>
+                            {% endif %}
                         </div>
                     </div>
                 </article>
