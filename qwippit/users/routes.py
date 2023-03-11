@@ -13,6 +13,9 @@ from qwippit.users.utils import save_picture, save_banner, send_reset_email
 users = Blueprint('users', __name__)
 
 
+# token blacklist
+blacklist = set()
+
 @users.route("/signup", methods=['GET', 'POST'])
 def signup():
     if current_user.is_authenticated:
@@ -208,8 +211,12 @@ def reset_request():
 def reset_token(token):
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
+
+    if token in blacklist:
+        flash('That token has already been used.', 'danger')
+        return render_template('errors/400.html', title="Token Used (400)")
+
     user = User.verify_reset_token(token)
-    User.get_reset_token(user, 5)
     if user is None:
         flash('That is an invalid or expired token', 'warning')
         return redirect(url_for('users.reset_request'))
@@ -219,6 +226,6 @@ def reset_token(token):
         user.password = hashed_password
         db.session.commit()
         flash(f'Your password has been updated.', 'success')
-
+        blacklist.add(token)
         return redirect(url_for('users.signin'))
     return render_template('users/reset_token.html', title='Reset Password', form=form)
