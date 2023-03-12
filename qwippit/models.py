@@ -90,6 +90,8 @@ class Qwipp(db.Model):
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     date_edited = db.Column(db.DateTime)
     content = db.Column(db.Text(256), nullable=False)
+    views = db.Column(db.Integer, nullable=False, default=0)
+    likes = db.Column(db.Integer, nullable=False, default=0)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):
@@ -102,6 +104,8 @@ class Qwill(db.Model):
     date_edited = db.Column(db.DateTime)
     title = db.Column(db.Text(), nullable=False)
     content = db.Column(db.Text(), nullable=False)
+    views = db.Column(db.Integer, nullable=False, default=0)
+    likes = db.Column(db.Integer, nullable=False, default=0)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     def __repr__(self):

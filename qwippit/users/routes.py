@@ -4,7 +4,7 @@ from datetime import datetime
 
 from qwippit import bcrypt, db
 from qwippit.models import User, Qwipp, Qwill
-from flask import Blueprint, redirect, flash, url_for, render_template, request, abort
+from flask import Blueprint, redirect, flash, url_for, render_template, request, abort, jsonify
 
 from qwippit.qwipps.forms import QwippForm, QwillForm
 from qwippit.users.forms import RegistrationForm, LoginForm, UpdateAccountForm, UpdatePasswordForm, RequestResetForm, \
@@ -74,6 +74,8 @@ def profile(username):
 def qwipp(username, qwipp_id):
     user = User.query.filter(func.lower(User.username) == func.lower(username)).first_or_404()
     qwipp = Qwipp.query.get_or_404(qwipp_id)
+    qwipp.views = qwipp.views + 1
+    db.session.commit()
     return render_template('qwipps/qwipp.html', title=user.displayname + " (@" + username + ")", qwipp=qwipp, user=user)
 
 
@@ -107,11 +109,24 @@ def delete_qwipp(username, qwipp_id):
     return redirect(url_for('main.home'))
 
 
+@users.route('/<string:username>/qwipp/<int:qwipp_id>/like', methods=['POST'])
+@login_required
+def like_qwipp(username, qwipp_id):
+    qwipp = Qwipp.query.get_or_404(qwipp_id)
+    if qwipp.author == current_user:
+        return jsonify({'likes': qwipp.likes})
+    qwipp.likes = qwipp.likes + 1
+    db.session.commit()
+    return jsonify({'likes': qwipp.likes})
+
+
 # Qwills
 @users.route("/<string:username>/qwill/<int:qwill_id>")
 def qwill(username, qwill_id):
     user = User.query.filter(func.lower(User.username) == func.lower(username)).first_or_404()
     qwill = Qwill.query.get_or_404(qwill_id)
+    qwill.views = qwill.views + 1
+    db.session.commit()
     return render_template('qwills/qwill.html', title=user.displayname + " (@" + username + ")", qwill=qwill, user=user)
 
 

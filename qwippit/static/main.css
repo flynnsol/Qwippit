@@ -210,6 +210,19 @@ a {
     border-bottom: none;
 }
 
+/* Likes */
+
+.likes {
+    cursor: pointer;
+}
+
+/* Comment */
+
+.comments {
+    cursor: pointer;
+}
+
+
 /* individual content */
 
 .individual-content {
