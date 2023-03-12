@@ -74,7 +74,8 @@ def profile(username):
 def qwipp(username, qwipp_id):
     user = User.query.filter(func.lower(User.username) == func.lower(username)).first_or_404()
     qwipp = Qwipp.query.get_or_404(qwipp_id)
-    qwipp.views = qwipp.views + 1
+    if current_user.id != user.id:
+        qwipp.views = qwipp.views + 1
     db.session.commit()
     return render_template('qwipps/qwipp.html', title=user.displayname + " (@" + username + ")", qwipp=qwipp, user=user)
 
