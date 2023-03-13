@@ -3,7 +3,7 @@ from sqlalchemy import func
 from datetime import datetime
 
 from qwippit import bcrypt, db
-from qwippit.models import User, Qwipp, Qwill, qwippViews
+from qwippit.models import User, Qwipp, Qwill, qwippViews, qwillViews
 from flask import Blueprint, redirect, flash, url_for, render_template, request, abort, jsonify
 
 from qwippit.qwipps.forms import QwippForm, QwillForm
@@ -150,7 +150,16 @@ def like_qwipp(username, qwipp_id):
 def qwill(username, qwill_id):
     user = User.query.filter(func.lower(User.username) == func.lower(username)).first_or_404()
     qwill = Qwill.query.get_or_404(qwill_id)
-    qwill.views = qwill.views + 1
+    if current_user.is_authenticated:
+        if current_user.id != user.id:
+            if qwill not in current_user.viewed_qwipps:
+                current_user.viewed_qwills.append(qwill)
+            else:
+                viewed_qwill = db.session.query(qwillViews).filter_by(user_id=current_user.id,
+                                                                      qwill_id=qwill.id).first()
+                db.session.query(qwillViews).filter_by(user_id=current_user.id, qwill_id=qwill.id).update(
+                    {"views_count": viewed_qwill.views_count + 1})
+            qwill.views = qwill.views + 1
     db.session.commit()
     return render_template('qwills/qwill.html', title=user.displayname + " (@" + username + ")", qwill=qwill, user=user)
 
