@@ -34,14 +34,14 @@ qwillLikes = db.Table('qwillLikes',
 qwippViews = db.Table('qwippViews',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
     db.Column('qwipp_id', db.Integer, db.ForeignKey('qwipp.id'), primary_key=True),
-    db.Column('views_count', db.Integer, default=0)
+    db.Column('views_count', db.Integer, default=1)
 )
 
 # Define the likes table
 qwillViews = db.Table('qwillViews',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
     db.Column('qwill_id', db.Integer, db.ForeignKey('qwill.id'), primary_key=True),
-    db.Column('views_count', db.Integer, default=0)
+    db.Column('views_count', db.Integer, default=1)
 )
 
 

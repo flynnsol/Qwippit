@@ -3,7 +3,7 @@ from sqlalchemy import func
 from datetime import datetime
 
 from qwippit import bcrypt, db
-from qwippit.models import User, Qwipp, Qwill
+from qwippit.models import User, Qwipp, Qwill, qwippViews
 from flask import Blueprint, redirect, flash, url_for, render_template, request, abort, jsonify
 
 from qwippit.qwipps.forms import QwippForm, QwillForm
@@ -17,6 +17,15 @@ users = Blueprint('users', __name__)
 # token blacklist
 reset_blacklist = set()
 verify_blacklist = set()
+
+
+@users.route("/check_auth")
+def check_auth():
+    if current_user.is_authenticated:
+        response = {'authenticated': True}
+    else:
+        response = {'authenticated': False}
+    return jsonify(response)
 
 @users.route("/signup", methods=['GET', 'POST'])
 def signup():
@@ -74,8 +83,16 @@ def profile(username):
 def qwipp(username, qwipp_id):
     user = User.query.filter(func.lower(User.username) == func.lower(username)).first_or_404()
     qwipp = Qwipp.query.get_or_404(qwipp_id)
-    if current_user.id != user.id:
-        qwipp.views = qwipp.views + 1
+    if current_user.is_authenticated:
+        if current_user.id != user.id:
+            if qwipp not in current_user.viewed_qwipps:
+                current_user.viewed_qwipps.append(qwipp)
+            else:
+                viewed_qwipp = db.session.query(qwippViews).filter_by(user_id=current_user.id, qwipp_id=qwipp.id).first()
+                viewed_qwipp.views_count += 1
+            view_count = db.session.query(qwippViews.views_count).filter(qwippViews.user_id == current_user.id, qwippViews.qwipp_id == qwipp.id).scalar()
+            flash(view_count)
+            qwipp.views = qwipp.views + 1
     db.session.commit()
     return render_template('qwipps/qwipp.html', title=user.displayname + " (@" + username + ")", qwipp=qwipp, user=user)
 
@@ -111,14 +128,23 @@ def delete_qwipp(username, qwipp_id):
 
 
 @users.route('/<string:username>/qwipp/<int:qwipp_id>/like', methods=['POST'])
-@login_required
 def like_qwipp(username, qwipp_id):
     qwipp = Qwipp.query.get_or_404(qwipp_id)
-    if qwipp.author == current_user:
-        return jsonify({'likes': qwipp.likes})
-    qwipp.likes = qwipp.likes + 1
-    db.session.commit()
-    return jsonify({'likes': qwipp.likes})
+    if current_user.is_authenticated:
+        if qwipp.author == current_user:
+            return jsonify({'likes': qwipp.likes})
+
+        if qwipp in current_user.liked_qwipps:
+            current_user.liked_qwipps.remove(qwipp)
+            qwipp.likes = qwipp.likes - 1
+        else:
+            current_user.liked_qwipps.append(qwipp)
+            qwipp.likes = qwipp.likes + 1
+
+        db.session.commit()
+        return jsonify({'likes': qwipp.likes, 'authenticated': True})
+    else:
+        return jsonify({'likes': qwipp.likes, 'authenticated': False})
 
 
 # Qwills
@@ -161,6 +187,26 @@ def delete_qwill(username, qwill_id):
     db.session.commit()
     flash('Qwill Deleted', 'success')
     return redirect(url_for('main.home'))
+
+
+@users.route('/<string:username>/qwill/<int:qwill_id>/like', methods=['POST'])
+def like_qwill(username, qwill_id):
+    qwill = Qwill.query.get_or_404(qwill_id)
+    if current_user.is_authenticated:
+        if qwill.author == current_user:
+            return jsonify({'likes': qwill.likes})
+
+        if qwill in current_user.liked_qwills:
+            current_user.liked_qwills.remove(qwill)
+            qwill.likes = qwill.likes - 1
+        else:
+            current_user.liked_qwills.append(qwill)
+            qwill.likes = qwill.likes + 1
+
+        db.session.commit()
+        return jsonify({'likes': qwill.likes, 'authenticated': True})
+    else:
+        return jsonify({'likes': qwill.likes, 'authenticated': False})
 
 
 @users.route("/settings", methods=['GET', 'POST'])
