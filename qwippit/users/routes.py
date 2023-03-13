@@ -89,9 +89,7 @@ def qwipp(username, qwipp_id):
                 current_user.viewed_qwipps.append(qwipp)
             else:
                 viewed_qwipp = db.session.query(qwippViews).filter_by(user_id=current_user.id, qwipp_id=qwipp.id).first()
-                viewed_qwipp.views_count += 1
-            view_count = db.session.query(qwippViews.views_count).filter(qwippViews.user_id == current_user.id, qwippViews.qwipp_id == qwipp.id).scalar()
-            flash(view_count)
+                db.session.query(qwippViews).filter_by(user_id=current_user.id, qwipp_id=qwipp.id).update({"views_count": viewed_qwipp.views_count + 1})
             qwipp.views = qwipp.views + 1
     db.session.commit()
     return render_template('qwipps/qwipp.html', title=user.displayname + " (@" + username + ")", qwipp=qwipp, user=user)
