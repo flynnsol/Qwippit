@@ -24,18 +24,29 @@
                         </svg>
                     </small>
                 {% else %}
-                    {% if qwipp in current_user.liked_qwipps %}
-                        <small class="likes">
-                            <a onclick="likeQwipp('{{ qwipp.author.username }}', {{ qwipp.id }}); event.stopPropagation();" class="main-font">
-                                <span id="likes-qwipp-{{ qwipp.id }}">{{ qwipp.likes }}</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" id="heart-qwipp-{{ qwipp.id }}" class="bi bi-heart-fill" viewBox="0 0 16 16">
-                                  <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
-                                </svg>
-                            </a>
-                        </small>
+                    {% if current_user.is_authenticated %}
+                        {% if qwipp in current_user.liked_qwipps %}
+                            <small class="likes">
+                                <a onclick="likeQwipp('{{ qwipp.author.username }}', {{ qwipp.id }}); event.stopPropagation();" class="main-font">
+                                    <span id="likes-qwipp-{{ qwipp.id }}">{{ qwipp.likes }}</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" id="heart-qwipp-{{ qwipp.id }}" class="bi bi-heart-fill" viewBox="0 0 16 16">
+                                      <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
+                                    </svg>
+                                </a>
+                            </small>
+                        {% else %}
+                            <small class="likes">
+                                <a onclick="likeQwipp('{{ qwipp.author.username }}', {{ qwipp.id }}); event.stopPropagation();" class="main-font">
+                                    <span id="likes-qwipp-{{ qwipp.id }}">{{ qwipp.likes }}</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" id="heart-qwipp-{{ qwipp.id }}" class="bi bi-heart" viewBox="0 0 16 16">
+                                      <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>
+                                    </svg>
+                                </a>
+                            </small>
+                        {% endif %}
                     {% else %}
                         <small class="likes">
-                            <a onclick="likeQwipp('{{ qwipp.author.username }}', {{ qwipp.id }}); event.stopPropagation();" class="main-font">
+                            <a href="{{ url_for('users.signin') }}" class="main-font">
                                 <span id="likes-qwipp-{{ qwipp.id }}">{{ qwipp.likes }}</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" id="heart-qwipp-{{ qwipp.id }}" class="bi bi-heart" viewBox="0 0 16 16">
                                   <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>
@@ -83,27 +94,23 @@
     </div>
     <script>
           function likeQwipp(username, qwipp_id) {
-                $.ajax({
-                    url: '/' + username + '/qwipp/' + qwipp_id + '/like',
-                    type: 'POST',
-                    data: { qwipp_id: qwipp_id },
-                    success: function(response) {
-                        $('#likes-qwipp-' + qwipp_id).text(response.likes);
-                        if (response.authenticated) {
-                            var svg = document.getElementById("heart-qwipp-" + qwipp_id);
-                            if (svg.getAttribute("class") === "bi bi-heart") {
-                                svg.setAttribute("class", "bi bi-heart-fill");
-                                svg.innerHTML = '<path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>';
-                              } else {
-                                svg.setAttribute("class", "bi bi-heart");
-                                svg.innerHTML = '<path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>';
-                              }
-                        } else {
-                            window.location.href = "{{ url_for('users.signin') }}";
-                        }
-                    }
-                });
+            var svg = document.getElementById("heart-qwipp-" + qwipp_id);
+            if (svg.getAttribute("class") === "bi bi-heart") {
+                svg.setAttribute("class", "bi bi-heart-fill");
+                svg.innerHTML = '<path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>';
+                $('#likes-qwipp-' + qwipp_id).text(parseInt($('#likes-qwipp-' + qwipp_id).text()) + 1);
+            } else {
+                svg.setAttribute("class", "bi bi-heart");
+                svg.innerHTML = '<path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>';
+                $('#likes-qwipp-' + qwipp_id).text(parseInt($('#likes-qwipp-' + qwipp_id).text()) - 1);
             }
+
+            $.ajax({
+                url: '/' + username + '/qwipp/' + qwipp_id + '/like',
+                type: 'POST',
+                data: { qwipp_id },
+            });
+        }
       </script>
   </article>
 {% endblock content %}

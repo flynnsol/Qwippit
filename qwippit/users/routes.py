@@ -87,10 +87,10 @@ def qwipp(username, qwipp_id):
         if current_user.id != user.id:
             if qwipp not in current_user.viewed_qwipps:
                 current_user.viewed_qwipps.append(qwipp)
+                qwipp.views = qwipp.views + 1
             else:
                 viewed_qwipp = db.session.query(qwippViews).filter_by(user_id=current_user.id, qwipp_id=qwipp.id).first()
                 db.session.query(qwippViews).filter_by(user_id=current_user.id, qwipp_id=qwipp.id).update({"views_count": viewed_qwipp.views_count + 1})
-            qwipp.views = qwipp.views + 1
     db.session.commit()
     return render_template('qwipps/qwipp.html', title=user.displayname + " (@" + username + ")", qwipp=qwipp, user=user)
 
@@ -126,23 +126,21 @@ def delete_qwipp(username, qwipp_id):
 
 
 @users.route('/<string:username>/qwipp/<int:qwipp_id>/like', methods=['POST'])
+@login_required
 def like_qwipp(username, qwipp_id):
     qwipp = Qwipp.query.get_or_404(qwipp_id)
-    if current_user.is_authenticated:
-        if qwipp.author == current_user:
-            return jsonify({'likes': qwipp.likes})
+    if qwipp.author == current_user:
+        return jsonify({'likes': qwipp.likes})
 
-        if qwipp in current_user.liked_qwipps:
-            current_user.liked_qwipps.remove(qwipp)
-            qwipp.likes = qwipp.likes - 1
-        else:
-            current_user.liked_qwipps.append(qwipp)
-            qwipp.likes = qwipp.likes + 1
-
-        db.session.commit()
-        return jsonify({'likes': qwipp.likes, 'authenticated': True})
+    if qwipp in current_user.liked_qwipps:
+        current_user.liked_qwipps.remove(qwipp)
+        qwipp.likes = qwipp.likes - 1
     else:
-        return jsonify({'likes': qwipp.likes, 'authenticated': False})
+        current_user.liked_qwipps.append(qwipp)
+        qwipp.likes = qwipp.likes + 1
+
+    db.session.commit()
+    return jsonify({'likes': qwipp.likes})
 
 
 # Qwills
@@ -154,12 +152,10 @@ def qwill(username, qwill_id):
         if current_user.id != user.id:
             if qwill not in current_user.viewed_qwipps:
                 current_user.viewed_qwills.append(qwill)
+                qwill.views = qwill.views + 1
             else:
-                viewed_qwill = db.session.query(qwillViews).filter_by(user_id=current_user.id,
-                                                                      qwill_id=qwill.id).first()
-                db.session.query(qwillViews).filter_by(user_id=current_user.id, qwill_id=qwill.id).update(
-                    {"views_count": viewed_qwill.views_count + 1})
-            qwill.views = qwill.views + 1
+                viewed_qwill = db.session.query(qwillViews).filter_by(user_id=current_user.id, qwill_id=qwill.id).first()
+                db.session.query(qwillViews).filter_by(user_id=current_user.id, qwill_id=qwill.id).update({"views_count": viewed_qwill.views_count + 1})
     db.session.commit()
     return render_template('qwills/qwill.html', title=user.displayname + " (@" + username + ")", qwill=qwill, user=user)
 
