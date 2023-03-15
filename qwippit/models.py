@@ -44,6 +44,18 @@ qwillViews = db.Table('qwillViews',
     db.Column('views_count', db.Integer, default=1)
 )
 
+# Hashtags with Qwipps
+qwippHashtag = db.Table('qwippHashtag',
+    db.Column('qwipp_id', db.Integer, db.ForeignKey('qwipp.id'), primary_key=True),
+    db.Column('hashtag_id', db.Integer, db.ForeignKey('hashtag.id'), primary_key=True),
+)
+
+# Hashtags with Qwipps
+qwillHashtag = db.Table('qwillHashtag',
+    db.Column('qwill_id', db.Integer, db.ForeignKey('qwill.id'), primary_key=True),
+    db.Column('hashtag_id', db.Integer, db.ForeignKey('hashtag.id'), primary_key=True),
+)
+
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -128,6 +140,8 @@ class Qwipp(db.Model):
     likes = db.Column(db.Integer, nullable=False, default=0)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
+    hashtags = db.relationship('Hashtag', secondary='qwippHashtag')
+
     def __repr__(self):
         return f"Qwipp('{self.content}', '{self.date_posted}')"
 
@@ -142,5 +156,15 @@ class Qwill(db.Model):
     likes = db.Column(db.Integer, nullable=False, default=0)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
+    hashtags = db.relationship('Hashtag', secondary='qwillHashtag')
+
     def __repr__(self):
-        return f"Qwipp('{self.content}', '{self.date_posted}')"
+        return f"Qwill('{self.title}', '{self.content}', '{self.date_posted}')"
+
+
+class Hashtag(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.Text(), nullable=False)
+
+    def __repr__(self):
+        return f"Hashtag('{self.content}')"
