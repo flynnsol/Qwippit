@@ -1,0 +1,78 @@
+{% extends "main/layout.html" %}
+{% block content %}
+    {% if isQwipp %}
+    <article class="row content-section individual-qwipp">
+        <div class="d-flex media">
+            <img class="me-3 rounded-circle border border-highlight" width="65px" height="65px" src="{{ url_for('static', filename='profile_pics/' + qwipp.author.image_file) }}">
+            <div class="media-body">
+                <div class="article-metadata">
+                    <a class="author-link mr-2" href="{{ url_for('users.profile', username=qwipp.author.username) }}">{{ qwipp.author.displayname }}</a>
+                    <small class="text-muted">@{{ qwipp.author.username }}</small>
+                </div>
+                <div class="content">
+                    <p class="article-content">{{ qwipp.content }}</p>
+                <div>
+                <small class="date-time text-muted">{{ qwipp.date_posted.strftime('%b %d, %Y') }}</small>
+                {% if qwipp.date_edited != None %}
+                    <small class="date-time text-muted ms-4">Edited: {{ qwipp.date_edited.strftime('%b %d, %Y') }}</small>
+                {% endif %}
+            </div>
+        </div>
+  </article>
+  {% else %}
+    <article class="row content-section individual-qwill">
+        <div class="d-flex media">
+            <img class="me-3 rounded-circle border border-highlight" width="65px" height="65px" src="{{ url_for('static', filename='profile_pics/' + qwill.author.image_file) }}">
+            <div class="media-body">
+                <div class="article-metadata">
+                    <a class="author-link mr-2" href="{{ url_for('users.profile', username=qwill.author.username) }}">{{ qwill.author.displayname }}</a>
+                    <small class="text-muted">@{{ qwill.author.username }}</small>
+                </div>
+                <div class="qwill-title">
+                    <h2>{{ qwill.title }}</h2>
+                </div>
+                <div class="content">
+                    <p class="article-content">{{ qwill.content }}</p>
+                <div>
+                <small class="date-time text-muted">{{ qwill.date_posted.strftime('%b %d, %Y') }}</small>
+                {% if qwill.date_edited != None %}
+                    <small class="date-time text-muted ms-4">Edited: {{ qwill.date_edited.strftime('%b %d, %Y') }}</small>
+                {% endif %}
+            </div>
+        </div>
+    </article>
+  {% endif %}
+  <div class="create-input create-qwipp row content-section edit-content">
+      <h4 class="mb-2">Reply</h4>
+      <form method="POST" action="">
+        {{ qwipp_form.hidden_tag() }}
+            <div class="form-group">
+                {% if qwipp_form.content.errors %}
+                  {{ qwipp_form.content(class="form-control form-control-lg is-invalid") }}
+                  <div class="invalid-feedback">
+                      {% for error in qwipp_form.content.errors %}
+                          <span>{{ error }}</span>
+                      {% endfor %}
+                  </div>
+                {% else %}
+                  {{ qwipp_form.content(autofocus=True, id="qwipp-text-area", rows="5", class="form-control form-control-lg") }}
+                {% endif %}
+                <span id="qwipp-form-count" class="main-font-nh">0</span>
+                <span id="qwipp-form-count-maximum" class="main-font-nh">/ 256</span>
+            </div>
+        <div class="form-group mt-4">
+            {{ qwipp_form.submit(class="btn btn-outline-primary") }}
+        </div>
+    </form>
+  </div>
+    <script>
+        $('textarea').keyup(function() {
+
+          var characterCount = $(this).val().length,
+              qwipp_counter = $('#qwipp-form-count'),
+              qwipp_counter_maximum = $('#qwipp-form-count-maximum')
+
+          qwipp_counter.text(characterCount);
+        });
+    </script>
+{% endblock content %}

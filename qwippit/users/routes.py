@@ -91,8 +91,17 @@ def qwipp(username, qwipp_id):
             else:
                 viewed_qwipp = db.session.query(qwippViews).filter_by(user_id=current_user.id, qwipp_id=qwipp.id).first()
                 db.session.query(qwippViews).filter_by(user_id=current_user.id, qwipp_id=qwipp.id).update({"views_count": viewed_qwipp.views_count + 1})
-    db.session.commit()
-    return render_template('qwipps/qwipp.html', title=user.displayname + " (@" + username + ")", qwipp=qwipp, user=user)
+
+            db.session.commit()
+
+    reply_qwipp = Qwipp.query.get(qwipp.qwipp_reply_id)
+    reply_qwill = Qwill.query.get(qwipp.qwill_reply_id)
+    if reply_qwipp:
+        return render_template('qwipps/qwipp.html', title=user.displayname + " (@" + username + ")", qwipp=qwipp, user=user, reply=reply_qwipp)
+    elif reply_qwill:
+        return render_template('qwipps/qwipp.html', title=user.displayname + " (@" + username + ")", qwipp=qwipp, user=user, reply=reply_qwill)
+    else:
+        return render_template('qwipps/qwipp.html', title=user.displayname + " (@" + username + ")", qwipp=qwipp, user=user)
 
 
 @users.route("/<string:username>/qwipp/<int:qwipp_id>/edit", methods=['GET', 'POST'])
@@ -143,6 +152,21 @@ def like_qwipp(username, qwipp_id):
     return jsonify({'likes': qwipp.likes})
 
 
+@users.route("/<string:username>/qwipp/<int:qwipp_id>/reply", methods=['GET', 'POST'])
+@login_required
+def reply_qwipp(username, qwipp_id):
+    qwipp = Qwipp.query.get_or_404(qwipp_id)
+    form = QwippForm()
+    if form.validate_on_submit():
+        reply_qwipp = Qwipp(content=form.content.data, author=current_user, is_reply=True, qwipp_reply_id=qwipp.id)
+        db.session.add(reply_qwipp)
+        qwipp.replies.append(reply_qwipp)
+        db.session.commit()
+        flash('Qwipp Created!', 'success')
+        return redirect(url_for('users.qwipp', username=username, qwipp_id=reply_qwipp.id))
+    return render_template('qwipps/reply.html', title=qwipp.author.displayname + " (@" + username + ") - Reply", qwipp=qwipp, isQwipp=True, qwipp_form=form)
+
+
 # Qwills
 @users.route("/<string:username>/qwill/<int:qwill_id>")
 def qwill(username, qwill_id):
@@ -150,7 +174,7 @@ def qwill(username, qwill_id):
     qwill = Qwill.query.get_or_404(qwill_id)
     if current_user.is_authenticated:
         if current_user.id != user.id:
-            if qwill not in current_user.viewed_qwipps:
+            if qwill not in current_user.viewed_qwills:
                 current_user.viewed_qwills.append(qwill)
                 qwill.views = qwill.views + 1
             else:
@@ -211,6 +235,23 @@ def like_qwill(username, qwill_id):
     else:
         return jsonify({'likes': qwill.likes, 'authenticated': False})
 
+
+@users.route("/<string:username>/qwill/<int:qwill_id>/reply", methods=['GET', 'POST'])
+@login_required
+def reply_qwill(username, qwill_id):
+    qwill = Qwill.query.get_or_404(qwill_id)
+    form = QwippForm()
+    if form.validate_on_submit():
+        reply_qwipp = Qwipp(content=form.content.data, author=current_user, is_reply=True, qwill_reply_id=qwill.id)
+        db.session.add(reply_qwipp)
+        qwill.replies.append(reply_qwipp)
+        db.session.commit()
+        flash('Qwipp Created!', 'success')
+        return redirect(url_for('users.qwipp', username=username, qwipp_id=reply_qwipp.id))
+    return render_template('qwipps/reply.html', title=qwill.author.displayname + " (@" + username + ") - Reply", qwill=qwill, isQwipp=False, qwipp_form=form)
+
+
+#End Qwills
 
 @users.route("/settings", methods=['GET', 'POST'])
 @login_required

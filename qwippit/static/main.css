@@ -137,11 +137,6 @@ a {
   white-space: pre-line;
 }
 
-.article-metadata {
-  padding-bottom: 1px;
-  margin-bottom: 4px;
-}
-
 .content-section {
     cursor: pointer;
     padding-top: 2rem;

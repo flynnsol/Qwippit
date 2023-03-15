@@ -50,10 +50,22 @@ qwippHashtag = db.Table('qwippHashtag',
     db.Column('hashtag_id', db.Integer, db.ForeignKey('hashtag.id'), primary_key=True),
 )
 
-# Hashtags with Qwipps
+# Hashtags with Qwills
 qwillHashtag = db.Table('qwillHashtag',
     db.Column('qwill_id', db.Integer, db.ForeignKey('qwill.id'), primary_key=True),
     db.Column('hashtag_id', db.Integer, db.ForeignKey('hashtag.id'), primary_key=True),
+)
+
+# Replies on Qwipps
+qwippReplies = db.Table('qwippReplies',
+    db.Column('qwipp_id', db.Integer, db.ForeignKey('qwipp.id'), primary_key=True),
+    db.Column('reply_id', db.Integer, db.ForeignKey('qwipp.id'), primary_key=True),
+)
+
+# Replies on Qwills
+qwillReplies = db.Table('qwillReplies',
+    db.Column('qwill_id', db.Integer, db.ForeignKey('qwill.id'), primary_key=True),
+    db.Column('reply_id', db.Integer, db.ForeignKey('qwipp.id'), primary_key=True),
 )
 
 
@@ -138,8 +150,12 @@ class Qwipp(db.Model):
     content = db.Column(db.Text(256), nullable=False)
     views = db.Column(db.Integer, nullable=False, default=0)
     likes = db.Column(db.Integer, nullable=False, default=0)
+    is_reply = db.Column(db.Boolean(), nullable=False, default=False)
+    qwipp_reply_id = db.Column(db.Integer)
+    qwill_reply_id = db.Column(db.Integer)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
+    replies = db.relationship('Qwipp', secondary=qwippReplies, primaryjoin=(qwippReplies.c.qwipp_id == id), secondaryjoin=(qwippReplies.c.reply_id == id), backref=db.backref('qwippReplies', lazy='dynamic'), lazy='dynamic')
     hashtags = db.relationship('Hashtag', secondary='qwippHashtag')
 
     def __repr__(self):
@@ -156,6 +172,7 @@ class Qwill(db.Model):
     likes = db.Column(db.Integer, nullable=False, default=0)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
+    replies = db.relationship('Qwill', secondary='qwillReplies')
     hashtags = db.relationship('Hashtag', secondary='qwillHashtag')
 
     def __repr__(self):
