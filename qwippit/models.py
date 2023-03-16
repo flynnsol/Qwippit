@@ -62,12 +62,6 @@ qwippReplies = db.Table('qwippReplies',
     db.Column('reply_id', db.Integer, db.ForeignKey('qwipp.id'), primary_key=True),
 )
 
-# Replies on Qwills
-qwillReplies = db.Table('qwillReplies',
-    db.Column('qwill_id', db.Integer, db.ForeignKey('qwill.id'), primary_key=True),
-    db.Column('reply_id', db.Integer, db.ForeignKey('qwipp.id'), primary_key=True),
-)
-
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -152,7 +146,7 @@ class Qwipp(db.Model):
     likes = db.Column(db.Integer, nullable=False, default=0)
     is_reply = db.Column(db.Boolean(), nullable=False, default=False)
     qwipp_reply_id = db.Column(db.Integer)
-    qwill_reply_id = db.Column(db.Integer)
+    qwill_reply_id = db.Column(db.Integer, db.ForeignKey('qwill.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     replies = db.relationship('Qwipp', secondary=qwippReplies, primaryjoin=(qwippReplies.c.qwipp_id == id), secondaryjoin=(qwippReplies.c.reply_id == id), backref=db.backref('qwippReplies', lazy='dynamic'), lazy='dynamic')
@@ -172,7 +166,7 @@ class Qwill(db.Model):
     likes = db.Column(db.Integer, nullable=False, default=0)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-    replies = db.relationship('Qwill', secondary='qwillReplies')
+    replies = db.relationship('Qwipp', backref='qwill_reply', lazy=True)
     hashtags = db.relationship('Hashtag', secondary='qwillHashtag')
 
     def __repr__(self):

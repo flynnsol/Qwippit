@@ -97,9 +97,9 @@ def qwipp(username, qwipp_id):
     reply_qwipp = Qwipp.query.get(qwipp.qwipp_reply_id)
     reply_qwill = Qwill.query.get(qwipp.qwill_reply_id)
     if reply_qwipp:
-        return render_template('qwipps/qwipp.html', title=user.displayname + " (@" + username + ")", qwipp=qwipp, user=user, reply=reply_qwipp)
+        return render_template('qwipps/qwipp.html', title=user.displayname + " (@" + username + ")", qwipp=qwipp, user=user, reply=reply_qwipp, isReplyToQwipp=True)
     elif reply_qwill:
-        return render_template('qwipps/qwipp.html', title=user.displayname + " (@" + username + ")", qwipp=qwipp, user=user, reply=reply_qwill)
+        return render_template('qwipps/qwipp.html', title=user.displayname + " (@" + username + ")", qwipp=qwipp, user=user, reply=reply_qwill, isReplyToQwipp=False)
     else:
         return render_template('qwipps/qwipp.html', title=user.displayname + " (@" + username + ")", qwipp=qwipp, user=user)
 
@@ -180,7 +180,8 @@ def qwill(username, qwill_id):
             else:
                 viewed_qwill = db.session.query(qwillViews).filter_by(user_id=current_user.id, qwill_id=qwill.id).first()
                 db.session.query(qwillViews).filter_by(user_id=current_user.id, qwill_id=qwill.id).update({"views_count": viewed_qwill.views_count + 1})
-    db.session.commit()
+            db.session.commit()
+
     return render_template('qwills/qwill.html', title=user.displayname + " (@" + username + ")", qwill=qwill, user=user)
 
 
