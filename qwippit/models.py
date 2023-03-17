@@ -85,6 +85,11 @@ class User(db.Model, UserMixin):
     qwipps = db.relationship('Qwipp', backref='author', lazy=True)
     qwills = db.relationship('Qwill', backref='author', lazy=True)
 
+    # notifications
+    like_notifications = db.Column(db.Boolean(), nullable=False, default=True)
+    follow_notifications = db.Column(db.Boolean(), nullable=False, default=True)
+    reply_notifications = db.Column(db.Boolean(), nullable=False, default=True)
+
     def get_reset_token(self, expires_sec=900):
         reset_token = jwt.encode(
             {
@@ -146,7 +151,7 @@ class Qwipp(db.Model):
     likes = db.Column(db.Integer, nullable=False, default=0)
     is_reply = db.Column(db.Boolean(), nullable=False, default=False)
     qwipp_reply_id = db.Column(db.Integer)
-    qwill_reply_id = db.Column(db.Integer, db.ForeignKey('qwill.id'))
+    qwill_reply = db.Column(db.Integer, db.ForeignKey('qwill.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     replies = db.relationship('Qwipp', secondary=qwippReplies, primaryjoin=(qwippReplies.c.qwipp_id == id), secondaryjoin=(qwippReplies.c.reply_id == id), backref=db.backref('qwippReplies', lazy='dynamic'), lazy='dynamic')
