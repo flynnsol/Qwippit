@@ -182,5 +182,9 @@ class Hashtag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text(), nullable=False)
 
+    qwipps = db.relationship('Qwipp', backref='contains_hashtag', lazy=True)
+    qwills = db.relationship('Qwill', backref='contains_hashtag', lazy=True)
+
+
     def __repr__(self):
         return f"Hashtag('{self.content}')"
