@@ -47,19 +47,19 @@ qwillViews = db.Table('qwillViews',
 # Hashtags with Qwipps
 qwippHashtag = db.Table('qwippHashtag',
     db.Column('qwipp_id', db.Integer, db.ForeignKey('qwipp.id'), primary_key=True),
-    db.Column('hashtag_id', db.Integer, db.ForeignKey('hashtag.id'), primary_key=True),
+    db.Column('hashtag_id', db.Integer, db.ForeignKey('hashtag.id'), primary_key=True)
 )
 
 # Hashtags with Qwills
 qwillHashtag = db.Table('qwillHashtag',
     db.Column('qwill_id', db.Integer, db.ForeignKey('qwill.id'), primary_key=True),
-    db.Column('hashtag_id', db.Integer, db.ForeignKey('hashtag.id'), primary_key=True),
+    db.Column('hashtag_id', db.Integer, db.ForeignKey('hashtag.id'), primary_key=True)
 )
 
 # Replies on Qwipps
 qwippReplies = db.Table('qwippReplies',
     db.Column('qwipp_id', db.Integer, db.ForeignKey('qwipp.id'), primary_key=True),
-    db.Column('reply_id', db.Integer, db.ForeignKey('qwipp.id'), primary_key=True),
+    db.Column('reply_id', db.Integer, db.ForeignKey('qwipp.id'), primary_key=True)
 )
 
 
@@ -155,7 +155,7 @@ class Qwipp(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     replies = db.relationship('Qwipp', secondary=qwippReplies, primaryjoin=(qwippReplies.c.qwipp_id == id), secondaryjoin=(qwippReplies.c.reply_id == id), backref=db.backref('qwippReplies', lazy='dynamic'), lazy='dynamic')
-    hashtags = db.relationship('Hashtag', db.ForeignKey('hashtag.id'))
+    hashtags = db.Column(db.Integer, db.ForeignKey('hashtag.id'))
 
     def __repr__(self):
         return f"Qwipp('{self.content}', '{self.date_posted}')"
@@ -172,7 +172,7 @@ class Qwill(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     replies = db.relationship('Qwipp', backref='qwill_reply', lazy=True)
-    hashtags = db.relationship('Hashtag', db.ForeignKey('hashtag.id'))
+    hashtags = db.Column(db.Integer, db.ForeignKey('hashtag.id'))
 
     def __repr__(self):
         return f"Qwill('{self.title}', '{self.content}', '{self.date_posted}')"
@@ -182,8 +182,8 @@ class Hashtag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text(), nullable=False)
 
-    qwipps = db.relationship('Qwipp', backref='contains_hashtag', lazy=True)
-    qwills = db.relationship('Qwill', backref='contains_hashtag', lazy=True)
+    qwipps = db.relationship('Qwipp', backref='hashtags_id', lazy=True)
+    qwills = db.relationship('Qwill', backref='hashtags_id', lazy=True)
 
 
     def __repr__(self):
