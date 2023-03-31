@@ -56,12 +56,6 @@ qwillHashtag = db.Table('qwillHashtag',
     db.Column('hashtag_id', db.Integer, db.ForeignKey('hashtag.id'), primary_key=True)
 )
 
-# Replies on Qwipps
-qwippReplies = db.Table('qwippReplies',
-    db.Column('qwipp_id', db.Integer, db.ForeignKey('qwipp.id'), primary_key=True),
-    db.Column('reply_id', db.Integer, db.ForeignKey('qwipp.id'), primary_key=True)
-)
-
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -150,11 +144,11 @@ class Qwipp(db.Model):
     views = db.Column(db.Integer, nullable=False, default=0)
     likes = db.Column(db.Integer, nullable=False, default=0)
     is_reply = db.Column(db.Boolean(), nullable=False, default=False)
-    qwipp_reply_id = db.Column(db.Integer)
     qwill_reply_id = db.Column(db.Integer, db.ForeignKey('qwill.id'))
+    qwipp_reply_id = db.Column(db.Integer, db.ForeignKey('qwipp.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-    replies = db.relationship('Qwipp', secondary=qwippReplies, primaryjoin=(qwippReplies.c.qwipp_id == id), secondaryjoin=(qwippReplies.c.reply_id == id), backref=db.backref('qwippReplies', lazy='dynamic'), lazy='dynamic')
+    replies = db.relationship('Qwipp', backref=db.backref('qwipp_replied_to', remote_side=[id]))
     hashtags = db.Column(db.Integer, db.ForeignKey('hashtag.id'))
 
     def __repr__(self):

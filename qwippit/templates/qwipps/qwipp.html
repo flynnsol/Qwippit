@@ -73,7 +73,7 @@
                 {% endif %}
                 {% if current_user.is_authenticated %}
                     <a href="{{ url_for('users.reply_qwipp', username=qwipp.author.username, qwipp_id=qwipp.id) }}" class="main-font ms-3">
-                        <span id="replies-qwipp-{{ qwipp.id }}">{{ qwipp.replies.count() }}</span>
+                        <span id="replies-qwipp-{{ qwipp.id }}">{{ qwipp.replies | length }}</span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-left-text comments" viewBox="0 0 16 16">
                           <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
                           <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
@@ -81,7 +81,7 @@
                     </a>
                 {% else %}
                     <small class="main-font-nh ms-3">
-                        <span id="replies-qwipp-{{ qwipp.id }}">{{ qwipp.replies.count() }}</span>
+                        <span id="replies-qwipp-{{ qwipp.id }}">{{ qwipp.replies | length }}</span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-left-text comments" viewBox="0 0 16 16">
                           <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
                           <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
@@ -155,7 +155,7 @@
                         </div>
                         {% if replyQwipp.is_reply %}
                             <div class="mb-2">
-                                <small class="text-muted">Replying to <a href="{{ url_for('users.profile', username=replyQwipp.author.username) }}" class="main-font">@{{ replyQwipp.author.username }}</a></small>
+                                <small class="text-muted">Replying to <a href="{{ url_for('users.profile', username=qwipp.author.username) }}" class="main-font">@{{ qwipp.author.username }}</a></small>
                             </div>
                         {% endif %}
 
@@ -208,7 +208,7 @@
                             {% endif %}
                             {% if current_user.is_authenticated %}
                                 <a href="{{ url_for('users.reply_qwipp', username=replyQwipp.author.username, qwipp_id=replyQwipp.id) }}" class="main-font ms-3">
-                                    <span id="replies-qwipp-{{ replyQwipp.id }}">{{ replyQwipp.replies.count() }}</span>
+                                    <span id="replies-qwipp-{{ replyQwipp.id }}">{{ replyQwipp.replies | length }}</span>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-left-text comments" viewBox="0 0 16 16">
                                       <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
                                       <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
@@ -216,7 +216,7 @@
                                 </a>
                             {% else %}
                                 <small class="main-font-nh ms-3">
-                                    <span id="replies-qwipp-{{ replyQwipp.id }}">{{ replyQwipp.replies.count() }}</span>
+                                    <span id="replies-qwipp-{{ replyQwipp.id }}">{{ replyQwipp.replies | length }}</span>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-left-text comments" viewBox="0 0 16 16">
                                       <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
                                       <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>

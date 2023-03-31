@@ -58,6 +58,37 @@ a {
     height: 2rem;
 }
 
+.navbar-toggler {
+    border-radius: 0.5rem;
+    border: solid 1px #54485D;
+}
+
+.navbar-toggler:focus {
+    box-shadow: none;
+}
+
+.bottom-nav-mobile {
+    display: flex;
+    align-items: stretch; /* Default */
+    justify-content: space-between;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
+.bottom-nav-mobile-item {
+    display: block;
+    flex: 0 1 auto; /* Default */
+    list-style-type: none;
+    margin-left: 0 !important;
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+}
+
 /* Center Content (Feed) */
 
 .center-content {

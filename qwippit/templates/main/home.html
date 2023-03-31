@@ -41,10 +41,25 @@
                             <div class="d-flex media">
                                 <img class="me-3 rounded-circle border border-highlight" width="65px" height="65px" src="{{ url_for('static', filename='profile_pics/' + qwipp.author.image_file) }}">
                                 <div class="media-body">
-                                    <div class="article-metadata">
+                                    {% if qwipp.is_reply %}
+                                        <div class="article-metadata">
+                                    {% else %}
+                                        <div class="article-metadata mb-2">
+                                    {% endif %}
                                         <a class="author-link mr-2" href="{{ url_for('users.profile', username=qwipp.author.username) }}">{{ qwipp.author.displayname }}</a>
                                         <small class="text-muted">@{{ qwipp.author.username }}</small>
                                     </div>
+                                    {% if qwipp.is_reply %}
+                                        {% if qwipp.qwipp_reply_id %}
+                                            <div class="mb-2">
+                                                <small class="text-muted">Replying to <a href="{{ url_for('users.qwipp', username=qwipp.qwipp_replied_to.author.username, qwipp_id=qwipp.qwipp_replied_to.id) }}" class="main-font">@{{ qwipp.qwipp_replied_to.author.username }}</a></small>
+                                            </div>
+                                        {% else %}
+                                            <div class="mb-2">
+                                                <small class="text-muted">Replying to <a href="{{ url_for('users.qwill', username=qwipp.qwill_reply.author.username, qwill_id=qwipp.qwill_reply.id) }}" class="main-font">@{{ qwipp.qwill_reply.author.username }}</a></small>
+                                            </div>
+                                        {% endif %}
+                                    {% endif %}
                                     <div class="content">
                                         <p class="article-content">{{ qwipp.content }}</p>
                                     <div>
@@ -94,7 +109,7 @@
                                         {% endif %}
                                         {% if current_user.is_authenticated %}
                                             <a href="{{ url_for('users.reply_qwipp', username=qwipp.author.username, qwipp_id=qwipp.id) }}" class="main-font ms-3">
-                                                <span id="replies-qwipp-{{ qwipp.id }}">{{ qwipp.replies.count() }}</span>
+                                                <span id="replies-qwipp-{{ qwipp.id }}">{{ qwipp.replies | length }}</span>
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-left-text comments" viewBox="0 0 16 16">
                                                   <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
                                                   <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
@@ -102,7 +117,7 @@
                                             </a>
                                         {% else %}
                                             <small class="main-font-nh ms-3">
-                                                <span id="replies-qwipp-{{ qwipp.id }}">{{ qwipp.replies.count() }}</span>
+                                                <span id="replies-qwipp-{{ qwipp.id }}">{{ qwipp.replies | length }}</span>
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-left-text comments" viewBox="0 0 16 16">
                                                   <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
                                                   <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>

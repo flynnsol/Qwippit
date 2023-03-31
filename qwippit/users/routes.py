@@ -84,7 +84,7 @@ def qwipp(username, qwipp_id):
     user = User.query.filter(func.lower(User.username) == func.lower(username)).first_or_404()
     qwipp = Qwipp.query.get_or_404(qwipp_id)
     if current_user.is_authenticated:
-        if current_user.id != user.id:
+        if current_user.id != qwipp.author.id:
             if qwipp not in current_user.viewed_qwipps:
                 current_user.viewed_qwipps.append(qwipp)
                 qwipp.views = qwipp.views + 1
@@ -93,6 +93,9 @@ def qwipp(username, qwipp_id):
                 db.session.query(qwippViews).filter_by(user_id=current_user.id, qwipp_id=qwipp.id).update({"views_count": viewed_qwipp.views_count + 1})
 
             db.session.commit()
+
+    if username.lower() != qwipp.author.username.lower():
+        return redirect('/home')
 
     reply_qwipp = Qwipp.query.get(qwipp.qwipp_reply_id)
     reply_qwill = Qwill.query.get(qwipp.qwill_reply_id)
@@ -161,7 +164,6 @@ def reply_qwipp(username, qwipp_id):
         reply_qwipp = Qwipp(content=form.content.data, author=current_user, is_reply=True, qwipp_reply_id=qwipp.id)
         db.session.add(reply_qwipp)
         qwipp.replies.append(reply_qwipp)
-        reply_qwipp.qwipp_reply.append(qwipp)
         db.session.commit()
         flash('Qwipp Created!', 'success')
         return redirect(url_for('users.qwipp', username=username, qwipp_id=reply_qwipp.id))
@@ -182,6 +184,9 @@ def qwill(username, qwill_id):
                 viewed_qwill = db.session.query(qwillViews).filter_by(user_id=current_user.id, qwill_id=qwill.id).first()
                 db.session.query(qwillViews).filter_by(user_id=current_user.id, qwill_id=qwill.id).update({"views_count": viewed_qwill.views_count + 1})
             db.session.commit()
+
+    if username.lower() != qwill.author.username.lower():
+        return redirect('/home')
 
     return render_template('qwills/qwill.html', title=user.displayname + " (@" + username + ")", qwill=qwill, user=user)
 
@@ -247,7 +252,6 @@ def reply_qwill(username, qwill_id):
         reply_qwipp = Qwipp(content=form.content.data, author=current_user, is_reply=True, qwill_reply_id=qwill.id)
         db.session.add(reply_qwipp)
         qwill.replies.append(reply_qwipp)
-        reply_qwipp.qwill_reply.append(qwill)
         db.session.commit()
         flash('Qwipp Created!', 'success')
         return redirect(url_for('users.qwipp', username=username, qwipp_id=reply_qwipp.id))
