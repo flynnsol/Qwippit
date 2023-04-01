@@ -2,7 +2,7 @@ import os
 import secrets
 
 import PIL.Image
-from flask import url_for, current_app
+from flask import url_for, current_app, render_template
 from flask_login import current_user
 from flask_mail import Message
 
@@ -50,7 +50,7 @@ def save_banner(form_banner):
 def send_reset_email(user):
     token = user.get_reset_token()
     msg = Message('Password Reset Request',
-                  sender='support@qwippit.com',
+                  sender=('Qwippit', 'support@qwippit.com'),
                   recipients=[user.email])
     msg.body = f'''
 To reset your password, visit the following link:
@@ -58,13 +58,14 @@ To reset your password, visit the following link:
 
 If you did not make this request then ignore this email and no changes will be made.
     '''
+    msg.html = render_template('email/forgotpassword.html', token=token)
     mail.send(msg)
 
 
 def send_verify_email(user):
     token = user.get_email_token()
     msg = Message('Verify Your Email',
-                  sender='support@qwippit.com',
+                  sender=('Qwippit', 'support@qwippit.com'),
                   recipients=[user.email])
     msg.body = f'''
 To verify your email, visit the following link:
@@ -72,4 +73,5 @@ To verify your email, visit the following link:
 
 If you did not make this request then ignore this email and the account will not be verified.
     '''
+    msg.html = render_template('email/emailverification.html', token=token)
     mail.send(msg)

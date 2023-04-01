@@ -19,13 +19,6 @@ reset_blacklist = set()
 verify_blacklist = set()
 
 
-@users.route("/check_auth")
-def check_auth():
-    if current_user.is_authenticated:
-        response = {'authenticated': True}
-    else:
-        response = {'authenticated': False}
-    return jsonify(response)
 
 @users.route("/signup", methods=['GET', 'POST'])
 def signup():
@@ -50,15 +43,13 @@ def signin():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter(func.lower(User.email) == func.lower(form.email.data)).first_or_404()
-        if user.emailverified:
-            if user and bcrypt.check_password_hash(user.password, form.password.data):
-                login_user(user, remember=form.remember.data)
-                next_page = request.args.get('next')
-                return redirect(next_page) if next_page else redirect(url_for('main.home'))
-            else:
-                flash('Sign In Unsuccessful. Please check email and password.', 'danger')
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
+            login_user(user, remember=form.remember.data)
+            next_page = request.args.get('next')
+            return redirect(next_page) if next_page else redirect(url_for('main.home'))
         else:
-            flash('Please verify your email address.', 'danger')
+            flash('Sign In Unsuccessful. Please check email and password.', 'danger')
+
     return render_template('users/signin.html', title='Sign In', form=form)
 
 
@@ -67,6 +58,7 @@ def signin():
 def signout():
     logout_user()
     return redirect(url_for('main.home'))
+
 
 @users.route("/<string:username>")
 def profile(username):
@@ -260,9 +252,14 @@ def reply_qwill(username, qwill_id):
 
 #End Qwills
 
-@users.route("/settings", methods=['GET', 'POST'])
+@users.route("/settings")
 @login_required
 def settings():
+    return render_template('main/settings.html', title="Settings")
+
+
+@users.route("/profile-settings", methods=['GET', 'POST'])
+def profilesettings():
     form = UpdateAccountForm()
     if form.validate_on_submit():
         if form.picture.data:
@@ -276,12 +273,46 @@ def settings():
         current_user.email = form.email.data
         db.session.commit()
         flash('Account Information Updated.', 'success')
-        return redirect(url_for('users.settings'))
+        return redirect(url_for('users.profilesettings'))
     elif request.method == 'GET':
         form.username.data = current_user.username
         form.displayname.data = current_user.displayname
         form.email.data = current_user.email
-    return render_template('main/settings.html', title="Settings", form=form)
+    return render_template('main/profilesettings.html', title="Profile Settings", form=form)
+
+
+@users.route("/notification-settings", methods=['GET', 'POST'])
+def notificationsettings():
+
+
+    return render_template('main/notificationsettings.html', title="Notification Settings")
+
+
+@users.route("/security", methods=['GET', 'POST'])
+def security():
+    form = UpdateAccountForm()
+    if form.validate_on_submit():
+        if form.picture.data:
+            picture_file = save_picture(form.picture.data)
+            current_user.image_file = picture_file
+        if form.banner.data:
+            banner_file = save_banner(form.banner.data)
+            current_user.banner_file = banner_file
+        current_user.username = form.username.data
+        current_user.displayname = form.displayname.data
+        if current_user.email != form.email.data:
+            current_user.emailverified = False
+        current_user.email = form.email.data
+        db.session.commit()
+        if not current_user.emailverified:
+            send_verify_email(current_user)
+        flash('Account Information Updated.', 'success')
+        return redirect(url_for('users.security'))
+    elif request.method == 'GET':
+        form.username.data = current_user.username
+        form.displayname.data = current_user.displayname
+        form.email.data = current_user.email
+    return render_template('main/securitysettings.html', title="Security Settings", form=form)
 
 
 @users.route('/password', methods=['GET', 'POST'])
@@ -354,9 +385,6 @@ def reset_token(token):
 
 @users.route("/verify_email/<token>")
 def verify_email(token):
-    if current_user.is_authenticated:
-        return redirect(url_for('main.home'))
-
     if token in verify_blacklist:
         flash('That token has already been used.', 'danger')
         return render_template('errors/400.html', title="Token Used (400)")
@@ -364,23 +392,22 @@ def verify_email(token):
     user = User.verify_token(token)
     if user is None:
         flash('That is an invalid or expired token', 'warning')
-        return redirect(url_for('users.signin'))
+        return redirect(url_for('users.security'))
     else:
-        flash('Email successfully verified! You can now Sign In!', 'success')
+        flash('Email successfully verified!', 'success')
         user.emailverified = True
         db.session.commit()
         verify_blacklist.add(token)
-        return redirect(url_for('users.signin'))
+        return redirect(url_for('users.security'))
 
 
-@users.route("/verify_email", methods=['GET', 'POST'])
+@users.route("/verify_email")
 def verify_request():
-    if current_user.is_authenticated:
-        return redirect(url_for('main.home'))
-    form = RequestVerifyForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+    user = current_user
+    if user.emailverified:
+        flash('Your email is already verified.', 'warning')
+        return redirect(url_for('users.security'))
+    else:
         send_verify_email(user)
         flash('Email Verification link has been sent.', 'success')
-        return redirect(url_for('users.signin'))
-    return render_template('users/verify_request.html', title='Verify Email', form=form)
+        return redirect(url_for('users.security'))
