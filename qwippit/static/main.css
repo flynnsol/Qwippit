@@ -427,6 +427,11 @@ input:-webkit-autofill:focus {
     background-color: #31263B;
 }
 
+.bio-text-area {
+    resize: none;
+}
+
+
 /* alert flash messages */
 
 .alert {

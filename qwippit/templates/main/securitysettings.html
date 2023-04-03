@@ -19,7 +19,7 @@
                     {{ form.username(class="form-control form-control-lg") }}
                   {% endif %}
               </div>
-                <div class="form-group" style="display: none;">
+              <div class="form-group" style="display: none;">
                   {{ form.displayname.label(class="form-control-label") }}
 
                   {% if form.displayname.errors %}
@@ -31,6 +31,20 @@
                     </div>
                   {% else %}
                     {{ form.displayname(class="form-control form-control-lg") }}
+                  {% endif %}
+              </div>
+              <div class="form-group" style="display: none;">
+                  {{ form.bio.label(class="form-control-label") }}
+
+                  {% if form.bio.errors %}
+                    {{ form.bio(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.bio.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                  {% else %}
+                    {{ form.bio(class="form-control form-control-lg") }}
                   {% endif %}
               </div>
               <div class="form-group">

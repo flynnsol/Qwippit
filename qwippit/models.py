@@ -44,24 +44,13 @@ qwillViews = db.Table('qwillViews',
     db.Column('views_count', db.Integer, default=1)
 )
 
-# Hashtags with Qwipps
-qwippHashtag = db.Table('qwippHashtag',
-    db.Column('qwipp_id', db.Integer, db.ForeignKey('qwipp.id'), primary_key=True),
-    db.Column('hashtag_id', db.Integer, db.ForeignKey('hashtag.id'), primary_key=True)
-)
-
-# Hashtags with Qwills
-qwillHashtag = db.Table('qwillHashtag',
-    db.Column('qwill_id', db.Integer, db.ForeignKey('qwill.id'), primary_key=True),
-    db.Column('hashtag_id', db.Integer, db.ForeignKey('hashtag.id'), primary_key=True)
-)
-
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(16), unique=True, nullable=False)
     displayname = db.Column(db.String(20), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
+    bio = db.Column(db.String(256))
     image_file = db.Column(db.String(20), nullable=False, default='default.png')
     banner_file = db.Column(db.String(20), nullable=False, default='default.png')
     password = db.Column(db.String(60), nullable=False)

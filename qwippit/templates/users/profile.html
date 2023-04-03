@@ -20,10 +20,22 @@
                     </div>
                 {% else %}
                     <div class="profile-button follow col">
-                        <button type="button" class="btn btn-outline-primary m-2">Follow</button>
+                        {% if current_user.is_following(user) %}
+                            <p>{{ current_user.is_following(user) }}</p>
+                            <button type="button" id="follow-button" onclick="followUser('{{ user.username }}');" class="btn btn-primary m-2">Unfollow</button>
+                        {% else %}
+                            <p>{{ current_user.is_following(user) }}</p>
+                            <button type="button" id="follow-button" onclick="followUser('{{ user.username }}');" class="btn btn-outline-primary m-2">Follow</button>
+                        {% endif %}
+                        <p>{{ user.followers.count() }}</p>
                     </div>
                 {% endif %}
             {% endif %}
+            <div class="profile-bio">
+                {% if user.bio %}
+                    <p class="main-text-nh mt-2 mb-3">{{ user.bio }}</p>
+                {% endif %}
+            </div>
         </div>
         <div class="row profile-center-content-top">
             <div class="col feed-option feedoption active" onclick="QwippQwill(event, 'qwipp')" id="defaultOpen">
@@ -314,6 +326,25 @@
                 url: '/' + username + '/qwill/' + qwill_id + '/like',
                 type: 'POST',
                 data: { qwill_id: qwill_id },
+            });
+        }
+
+        function followUser(username) {
+            var btn = document.getElementById("follow-button");
+            if (btn.getAttribute("class") === "btn btn-outline-primary m-2") {
+                btn.setAttribute("class", "btn btn-primary m-2");
+                btn.innerHTML = 'Unfollow';
+                $('#user-followers').text(parseInt($('#user-followers').text()) + 1);
+            } else {
+                btn.setAttribute("class", "btn btn-outline-primary m-2");
+                btn.innerHTML = 'Follow';
+                $('#user-followers').text(parseInt($('#user-followers').text()) - 1);
+            }
+
+            $.ajax({
+                url: '/' + username + '/follow',
+                type: 'POST',
+                data: { username },
             });
         }
     </script>

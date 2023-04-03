@@ -19,7 +19,7 @@
                     {{ form.username(class="form-control form-control-lg") }}
                   {% endif %}
               </div>
-                <div class="form-group">
+              <div class="form-group">
                   {{ form.displayname.label(class="form-control-label") }}
 
                   {% if form.displayname.errors %}
@@ -32,6 +32,22 @@
                   {% else %}
                     {{ form.displayname(class="form-control form-control-lg") }}
                   {% endif %}
+              </div>
+              <div class="form-group">
+                  {{ form.bio.label(class="form-control-label") }}
+
+                  {% if form.bio.errors %}
+                    {{ form.bio(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.bio.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                  {% else %}
+                    {{ form.bio(rows="5", id="bio-text-area", class="form-control form-control-lg bio-text-area") }}
+                  {% endif %}
+                  <span id="bio-form-count" class="main-font-nh">0</span>
+                  <span id="bio-form-count-maximum" class="main-font-nh">/ 256</span>
               </div>
               <div class="form-group" style="display: none;">
                   {{ form.email.label(class="form-control-label") }}
@@ -72,4 +88,14 @@
             </div>
         </form>
     </div>
+    <script>
+        $('textarea').keyup(function() {
+
+          var characterCount = $(this).val().length,
+              bio_counter = $('#bio-form-count'),
+              bio_counter_maximum = $('#bio-form-count-maximum')
+
+          bio_counter.text(characterCount);
+        });
+    </script>
 {% endblock content %}

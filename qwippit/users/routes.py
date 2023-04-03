@@ -271,6 +271,7 @@ def profilesettings():
         current_user.username = form.username.data
         current_user.displayname = form.displayname.data
         current_user.email = form.email.data
+        current_user.bio = form.bio.data
         db.session.commit()
         flash('Account Information Updated.', 'success')
         return redirect(url_for('users.profilesettings'))
@@ -278,6 +279,7 @@ def profilesettings():
         form.username.data = current_user.username
         form.displayname.data = current_user.displayname
         form.email.data = current_user.email
+        form.bio.data = current_user.bio
     return render_template('main/profilesettings.html', title="Profile Settings", form=form)
 
 
@@ -411,3 +413,23 @@ def verify_request():
         send_verify_email(user)
         flash('Email Verification link has been sent.', 'success')
         return redirect(url_for('users.security'))
+
+
+# Following
+@users.route("/<string:username>/follow", methods=['POST'])
+def follow_user(username):
+    user = User.query.get_or_404(username)
+    if current_user.is_authenticated:
+        if user == current_user:
+            return None
+
+        if current_user.is_following(user):
+            current_user.unfollow(user)
+        else:
+            current_user.follow(user)
+
+        db.session.commit()
+
+        return jsonify({'follow': current_user.is_following(user), 'authenticated': True})
+    else:
+        return jsonify({'follow': current_user.is_following(user), 'authenticated': True})

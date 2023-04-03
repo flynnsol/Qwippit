@@ -2,7 +2,7 @@ from flask_login import current_user
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed
 from sqlalchemy import func
-from wtforms import PasswordField, SubmitField, StringField, FileField, BooleanField
+from wtforms import PasswordField, SubmitField, StringField, FileField, BooleanField, TextAreaField
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 
 from qwippit.models import User
@@ -39,6 +39,7 @@ class LoginForm(FlaskForm):
 class UpdateAccountForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=2, max=16)])
     email = StringField('Email', validators=[DataRequired(), Email()])
+    bio = TextAreaField('Bio', validators=[Length(max=256)])
     displayname = StringField('Display Name', validators=[DataRequired(), Length(min=2, max=20)])
     picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
     banner = FileField('Update Banner Image', validators=[FileAllowed(['jpg', 'png'])])
