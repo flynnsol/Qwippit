@@ -8,32 +8,33 @@
                     <h5 class="main-font-nh mr-2">{{ user.displayname }}</h5>
                     <h6 class="text-muted">@{{ user.username }}</h6>
                 </div>
-                <div class="bio">
-                    <small class="main-font-nh">
-                    </small>
-                </div>
             </div>
             {% if current_user.is_authenticated %}
                 {% if user == current_user %}
-                    <div class="profile-button edit-profile col">
+                    <div class="profile-button edit-profile col mt-3">
                         <a href="{{ url_for('users.profilesettings') }}" class="btn btn-outline-primary m-2">Edit Profile</a>
                     </div>
                 {% else %}
-                    <div class="profile-button follow col">
+                    <div class="profile-button follow col mt-4">
                         {% if current_user.is_following(user) %}
-                            <p>{{ current_user.is_following(user) }}</p>
-                            <button type="button" id="follow-button" onclick="followUser('{{ user.username }}');" class="btn btn-primary m-2">Unfollow</button>
+                            <button type="button" id="follow-button" onclick="followUser('{{ user.id }}');" class="btn btn-primary mb-2">Unfollow</button>
                         {% else %}
-                            <p>{{ current_user.is_following(user) }}</p>
-                            <button type="button" id="follow-button" onclick="followUser('{{ user.username }}');" class="btn btn-outline-primary m-2">Follow</button>
+                            <button type="button" id="follow-button" onclick="followUser('{{ user.id }}');" class="btn btn-outline-primary mb-2">Follow</button>
                         {% endif %}
-                        <p>{{ user.followers.count() }}</p>
                     </div>
                 {% endif %}
             {% endif %}
-            <div class="profile-bio">
+            <div class="profile-bio mb-4">
                 {% if user.bio %}
-                    <p class="main-text-nh mt-2 mb-3">{{ user.bio }}</p>
+                    <p class="main-text-nh mt-2">{{ user.bio }}</p>
+                {% endif %}
+            </div>
+            <div class="followers-following mb-3">
+                <a href="{{ url_for('users.user_following', username=user.username) }}" class="main-font me-4">{{ user.following.count() | number_format }} Following</a>
+                {% if user.followers.count() == 1 %}
+                    <a href="{{ url_for('users.user_followers', username=user.username) }}" class="main-font" id="user-followers">{{ user.followers.count() | number_format }} Follower</a>
+                {% else %}
+                    <a href="{{ url_for('users.user_followers', username=user.username) }}" class="main-font" id="user-followers">{{ user.followers.count() | number_format }} Followers</a>
                 {% endif %}
             </div>
         </div>
@@ -296,17 +297,18 @@
             if (svg.getAttribute("class") === "bi bi-heart") {
                 svg.setAttribute("class", "bi bi-heart-fill");
                 svg.innerHTML = '<path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>';
-                $('#likes-qwipp-' + qwipp_id).text(parseInt($('#likes-qwipp-' + qwipp_id).text()) + 1);
             } else {
                 svg.setAttribute("class", "bi bi-heart");
                 svg.innerHTML = '<path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>';
-                $('#likes-qwipp-' + qwipp_id).text(parseInt($('#likes-qwipp-' + qwipp_id).text()) - 1);
             }
 
             $.ajax({
-                url: '/' + username + '/qwipp/' + qwipp_id + '/like',
+                url: '/u/' + username + '/qwipp/' + qwipp_id + '/like',
                 type: 'POST',
                 data: { qwipp_id },
+                success: function (data) {
+                    $('#likes-qwipp-' + qwipp_id).text(data);
+                }
             });
         }
 
@@ -315,36 +317,42 @@
             if (svg.getAttribute("class") === "bi bi-heart") {
                 svg.setAttribute("class", "bi bi-heart-fill");
                 svg.innerHTML = '<path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>';
-                $('#likes-qwill-' + qwill_id).text(parseInt($('#likes-qwill-' + qwill_id).text()) + 1);
             } else {
                 svg.setAttribute("class", "bi bi-heart");
                 svg.innerHTML = '<path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>';
-                $('#likes-qwill-' + qwill_id).text(parseInt($('#likes-qwill-' + qwill_id).text()) - 1);
             }
 
             $.ajax({
-                url: '/' + username + '/qwill/' + qwill_id + '/like',
+                url: '/u/' + username + '/qwill/' + qwill_id + '/like',
                 type: 'POST',
                 data: { qwill_id: qwill_id },
+                success: function (data) {
+                    $('#likes-qwill-' + qwill_id).text(data);
+                }
             });
         }
 
-        function followUser(username) {
+        function followUser(user_id) {
             var btn = document.getElementById("follow-button");
-            if (btn.getAttribute("class") === "btn btn-outline-primary m-2") {
-                btn.setAttribute("class", "btn btn-primary m-2");
+            if (btn.getAttribute("class") === "btn btn-outline-primary mb-2") {
+                btn.setAttribute("class", "btn btn-primary mb-2");
                 btn.innerHTML = 'Unfollow';
-                $('#user-followers').text(parseInt($('#user-followers').text()) + 1);
             } else {
-                btn.setAttribute("class", "btn btn-outline-primary m-2");
+                btn.setAttribute("class", "btn btn-outline-primary mb-2");
                 btn.innerHTML = 'Follow';
-                $('#user-followers').text(parseInt($('#user-followers').text()) - 1);
             }
 
             $.ajax({
-                url: '/' + username + '/follow',
+                url: '/u/' + user_id + '/follow',
                 type: 'POST',
-                data: { username },
+                data: { user_id },
+                success: function (data) {
+                    if (parseInt(data) === 1) {
+                        $('#user-followers').text(data + " Follower");
+                    } else {
+                        $('#user-followers').text(data + " Followers");
+                    }
+                }
             });
         }
     </script>

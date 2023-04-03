@@ -188,6 +188,38 @@ a {
     border-bottom-left-radius: 1rem;
 }
 
+.content-section-last {
+    cursor: pointer;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: none;
+    border-color: #43374C;
+    background-color: #31263B;
+    transition: background-color 0.25s ease;
+}
+
+.content-section-last:hover {
+    background-color: #372C41;
+}
+
+.content-section-only {
+    cursor: pointer;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: none;
+    border-color: #43374C;
+    background-color: #31263B;
+    border-top-right-radius: 1rem;
+    border-top-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    border-bottom-left-radius: 1rem;
+    transition: background-color 0.25s ease;
+}
+
+.content-section-only:hover {
+    background-color: #372C41;
+}
+
 .border-highlight {
     --bs-border-color: #54485D;
 }
@@ -429,6 +461,18 @@ input:-webkit-autofill:focus {
 
 .bio-text-area {
     resize: none;
+}
+
+/* Followers/Following */
+
+.user-feed:first-child {
+    border-top-right-radius: 1rem;
+    border-top-left-radius: 1rem;
+}
+
+.user-feed-last {
+    border-bottom-right-radius: 1rem;
+    border-bottom-left-radius: 1rem;
 }
 
 

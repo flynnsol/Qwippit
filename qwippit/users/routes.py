@@ -18,6 +18,14 @@ users = Blueprint('users', __name__)
 reset_blacklist = set()
 verify_blacklist = set()
 
+def number_format(num):
+    magnitude = 0
+    while num >= 1000:
+        num = float('{:.3g}'.format(num))
+        magnitude += 1
+        num /= 1000.0
+    formatted_num = '{:,.1f}'.format(num) if 1000 <= num < 10000 else '{:f}'.format(num)
+    return '{}{}'.format(formatted_num.rstrip('0').rstrip('.'), ['', 'K', 'M', 'B', 'T'][magnitude])
 
 
 @users.route("/signup", methods=['GET', 'POST'])
@@ -60,7 +68,7 @@ def signout():
     return redirect(url_for('main.home'))
 
 
-@users.route("/<string:username>")
+@users.route("/u/<string:username>")
 def profile(username):
     user = User.query.filter(func.lower(User.username) == func.lower(username)).first_or_404()
     qwipps = Qwipp.query.filter_by(author=user)\
@@ -71,7 +79,7 @@ def profile(username):
 
 
 # Qwipps
-@users.route("/<string:username>/qwipp/<int:qwipp_id>")
+@users.route("/u/<string:username>/qwipp/<int:qwipp_id>")
 def qwipp(username, qwipp_id):
     user = User.query.filter(func.lower(User.username) == func.lower(username)).first_or_404()
     qwipp = Qwipp.query.get_or_404(qwipp_id)
@@ -99,7 +107,7 @@ def qwipp(username, qwipp_id):
         return render_template('qwipps/qwipp.html', title=user.displayname + " (@" + username + ")", qwipp=qwipp, user=user)
 
 
-@users.route("/<string:username>/qwipp/<int:qwipp_id>/edit", methods=['GET', 'POST'])
+@users.route("/u/<string:username>/qwipp/<int:qwipp_id>/edit", methods=['GET', 'POST'])
 @login_required
 def update_qwipp(username, qwipp_id):
     qwipp = Qwipp.query.get_or_404(qwipp_id)
@@ -117,7 +125,7 @@ def update_qwipp(username, qwipp_id):
     return render_template('qwipps/edit_qwipp.html', title=qwipp.author.displayname + " (@" + username + ")", qwipp=qwipp, qwipp_form=form)
 
 
-@users.route('/<string:username>/qwipp/<int:qwipp_id>/delete', methods=['POST'])
+@users.route('/u/<string:username>/qwipp/<int:qwipp_id>/delete', methods=['POST'])
 @login_required
 def delete_qwipp(username, qwipp_id):
     qwipp = Qwipp.query.get_or_404(qwipp_id)
@@ -129,12 +137,12 @@ def delete_qwipp(username, qwipp_id):
     return redirect(url_for('main.home'))
 
 
-@users.route('/<string:username>/qwipp/<int:qwipp_id>/like', methods=['POST'])
+@users.route('/u/<string:username>/qwipp/<int:qwipp_id>/like', methods=['POST'])
 @login_required
 def like_qwipp(username, qwipp_id):
     qwipp = Qwipp.query.get_or_404(qwipp_id)
     if qwipp.author == current_user:
-        return jsonify({'likes': qwipp.likes})
+        return jsonify(number_format(qwipp.likes))
 
     if qwipp in current_user.liked_qwipps:
         current_user.liked_qwipps.remove(qwipp)
@@ -144,10 +152,10 @@ def like_qwipp(username, qwipp_id):
         qwipp.likes = qwipp.likes + 1
 
     db.session.commit()
-    return jsonify({'likes': qwipp.likes})
+    return jsonify(number_format(qwipp.likes))
 
 
-@users.route("/<string:username>/qwipp/<int:qwipp_id>/reply", methods=['GET', 'POST'])
+@users.route("/u/<string:username>/qwipp/<int:qwipp_id>/reply", methods=['GET', 'POST'])
 @login_required
 def reply_qwipp(username, qwipp_id):
     qwipp = Qwipp.query.get_or_404(qwipp_id)
@@ -163,7 +171,7 @@ def reply_qwipp(username, qwipp_id):
 
 
 # Qwills
-@users.route("/<string:username>/qwill/<int:qwill_id>")
+@users.route("/u/<string:username>/qwill/<int:qwill_id>")
 def qwill(username, qwill_id):
     user = User.query.filter(func.lower(User.username) == func.lower(username)).first_or_404()
     qwill = Qwill.query.get_or_404(qwill_id)
@@ -183,7 +191,7 @@ def qwill(username, qwill_id):
     return render_template('qwills/qwill.html', title=user.displayname + " (@" + username + ")", qwill=qwill, user=user)
 
 
-@users.route("/<string:username>/qwill/<int:qwill_id>/edit", methods=['GET', 'POST'])
+@users.route("/u/<string:username>/qwill/<int:qwill_id>/edit", methods=['GET', 'POST'])
 @login_required
 def update_qwill(username, qwill_id):
     qwill = Qwill.query.get_or_404(qwill_id)
@@ -203,7 +211,7 @@ def update_qwill(username, qwill_id):
     return render_template('qwills/edit_qwill.html', title=qwill.author.displayname + " (@" + username + ")", qwill=qwill, qwill_form=form)
 
 
-@users.route('/<string:username>/qwill/<int:qwill_id>/delete', methods=['POST'])
+@users.route('/u/<string:username>/qwill/<int:qwill_id>/delete', methods=['POST'])
 @login_required
 def delete_qwill(username, qwill_id):
     qwill = Qwill.query.get_or_404(qwill_id)
@@ -215,27 +223,25 @@ def delete_qwill(username, qwill_id):
     return redirect(url_for('main.home'))
 
 
-@users.route('/<string:username>/qwill/<int:qwill_id>/like', methods=['POST'])
+@users.route('/u/<string:username>/qwill/<int:qwill_id>/like', methods=['POST'])
+@login_required
 def like_qwill(username, qwill_id):
     qwill = Qwill.query.get_or_404(qwill_id)
-    if current_user.is_authenticated:
-        if qwill.author == current_user:
-            return jsonify({'likes': qwill.likes})
+    if qwill.author == current_user:
+        return jsonify(number_format(qwill.likes))
 
-        if qwill in current_user.liked_qwills:
-            current_user.liked_qwills.remove(qwill)
-            qwill.likes = qwill.likes - 1
-        else:
-            current_user.liked_qwills.append(qwill)
-            qwill.likes = qwill.likes + 1
-
-        db.session.commit()
-        return jsonify({'likes': qwill.likes, 'authenticated': True})
+    if qwill in current_user.liked_qwills:
+        current_user.liked_qwills.remove(qwill)
+        qwill.likes = qwill.likes - 1
     else:
-        return jsonify({'likes': qwill.likes, 'authenticated': False})
+        current_user.liked_qwills.append(qwill)
+        qwill.likes = qwill.likes + 1
+
+    db.session.commit()
+    return jsonify(number_format(qwill.likes))
 
 
-@users.route("/<string:username>/qwill/<int:qwill_id>/reply", methods=['GET', 'POST'])
+@users.route("/u/<string:username>/qwill/<int:qwill_id>/reply", methods=['GET', 'POST'])
 @login_required
 def reply_qwill(username, qwill_id):
     qwill = Qwill.query.get_or_404(qwill_id)
@@ -331,7 +337,7 @@ def change_password():
             return redirect(url_for('users.change_password'))
     return render_template('users/change_password.html', title="Change Password", form=form)
 
-@users.route('/<int:user_id>/delete', methods=['POST'])
+@users.route('/u/<int:user_id>/delete', methods=['POST'])
 @login_required
 def delete_user(user_id):
     user = User.query.get_or_404(user_id)
@@ -416,20 +422,32 @@ def verify_request():
 
 
 # Following
-@users.route("/<string:username>/follow", methods=['POST'])
-def follow_user(username):
-    user = User.query.get_or_404(username)
-    if current_user.is_authenticated:
-        if user == current_user:
-            return None
+@users.route("/u/<int:user_id>/follow", methods=['POST'])
+@login_required
+def follow_user(user_id):
+    user = User.query.get_or_404(user_id)
+    if user == current_user:
+        return None
 
-        if current_user.is_following(user):
-            current_user.unfollow(user)
-        else:
-            current_user.follow(user)
-
-        db.session.commit()
-
-        return jsonify({'follow': current_user.is_following(user), 'authenticated': True})
+    if current_user.is_following(user):
+        current_user.unfollow(user)
     else:
-        return jsonify({'follow': current_user.is_following(user), 'authenticated': True})
+        current_user.follow(user)
+
+    db.session.commit()
+
+    return jsonify(number_format(user.followers.count()))
+
+
+@users.route("/u/<string:username>/followers")
+def user_followers(username):
+    user = User.query.filter(func.lower(User.username) == func.lower(username)).first_or_404()
+    followers = user.followers
+    return render_template('users/userfollowers.html', title="@" + username + " - Followers", followers=followers)
+
+
+@users.route("/u/<string:username>/following")
+def user_following(username):
+    user = User.query.filter(func.lower(User.username) == func.lower(username)).first_or_404()
+    following = user.following
+    return render_template('users/userfollowing.html', title="@" + username + " - Following", following=following)

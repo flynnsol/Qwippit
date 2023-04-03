@@ -12,12 +12,6 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-# Followers Table
-followers = db.Table('followers',
-    db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
-)
-
 # Define the likes table
 qwippLikes = db.Table('qwippLikes',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
@@ -44,6 +38,12 @@ qwillViews = db.Table('qwillViews',
     db.Column('views_count', db.Integer, default=1)
 )
 
+# Followers Table
+followers = db.Table('followers',
+    db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
+)
+
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -55,9 +55,16 @@ class User(db.Model, UserMixin):
     banner_file = db.Column(db.String(20), nullable=False, default='default.png')
     password = db.Column(db.String(60), nullable=False)
 
+
     emailverified = db.Column(db.Boolean(), nullable=False, default=False)
 
-    followed = db.relationship('User', secondary=followers, primaryjoin=(followers.c.follower_id == id), secondaryjoin=(followers.c.followed_id == id), backref=db.backref('followers', lazy='dynamic'), lazy='dynamic')
+    following = db.relationship('User',
+                                secondary=followers,
+                                primaryjoin=(followers.c.follower_id == id),
+                                secondaryjoin=(followers.c.followed_id == id),
+                                backref=db.backref('followers', lazy='dynamic'),
+                                lazy='dynamic')
+
 
     viewed_qwipps = db.relationship('Qwipp', secondary='qwippViews', backref='hasViewed')
     viewed_qwills = db.relationship('Qwill', secondary='qwillViews', backref='hasViewed')
@@ -109,14 +116,14 @@ class User(db.Model, UserMixin):
 
     def follow(self, user):
         if not self.is_following(user):
-            self.followed.append(user)
+            self.following.append(user)
 
     def unfollow(self, user):
         if self.is_following(user):
-            self.followed.remove(user)
+            self.following.remove(user)
 
     def is_following(self, user):
-        return self.followed.filter(
+        return self.following.filter(
             followers.c.followed_id == user.id).count() > 0
 
     # Todo: Followed Qwipps and Qwills
