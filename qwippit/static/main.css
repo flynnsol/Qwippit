@@ -24,6 +24,15 @@ a {
     background: #372C41;
 }
 
+.reverse-font {
+    color: #BEA7E5;
+    transition: color 0.25s ease;
+}
+
+.reverse-font:hover {
+    color: #EFDBF9;
+}
+
 .main-font {
     color: #EFDBF9;
     transition: color 0.25s ease;
@@ -218,6 +227,18 @@ a {
 
 .content-section-only:hover {
     background-color: #372C41;
+}
+
+.content-section-only-empty {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: none;
+    border-color: #43374C;
+    background-color: #31263B;
+    border-top-right-radius: 1rem;
+    border-top-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    border-bottom-left-radius: 1rem;
 }
 
 .border-highlight {

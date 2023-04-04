@@ -3,7 +3,7 @@ from sqlalchemy import func
 from datetime import datetime
 
 from qwippit import bcrypt, db
-from qwippit.models import User, Qwipp, Qwill, qwippViews, qwillViews
+from qwippit.models import User, Qwipp, Qwill, qwippViews, qwillViews, Hashtag
 from flask import Blueprint, redirect, flash, url_for, render_template, request, abort, jsonify
 
 from qwippit.qwipps.forms import QwippForm, QwillForm
@@ -117,6 +117,15 @@ def update_qwipp(username, qwipp_id):
     if form.validate_on_submit():
         qwipp.content = form.content.data
         qwipp.date_edited = datetime.utcnow()
+        hashtags = form.extract_hashtags()  # extract hashtags from the form
+        for tag in hashtags:
+            testhashtag = Hashtag.query.filter(func.lower(Hashtag.content) == func.lower(tag)).first()
+            hashtag = Hashtag(content=tag)
+            if testhashtag:
+                hashtag = testhashtag
+            else:
+                db.session.add(hashtag)
+            hashtag.qwipps.append(qwipp)
         db.session.commit()
         flash('Qwipp Updated!', 'success')
         return redirect(url_for('users.qwipp', username=username, qwipp_id=qwipp.id))
@@ -202,6 +211,15 @@ def update_qwill(username, qwill_id):
         qwill.title = form.title.data
         qwill.content = form.content.data
         qwill.date_edited = datetime.utcnow()
+        hashtags = form.extract_hashtags()  # extract hashtags from the form
+        for tag in hashtags:
+            testhashtag = Hashtag.query.filter(func.lower(Hashtag.content) == func.lower(tag)).first()
+            hashtag = Hashtag(content=tag)
+            if testhashtag:
+                hashtag = testhashtag
+            else:
+                db.session.add(hashtag)
+            hashtag.qwills.append(qwill)
         db.session.commit()
         flash('Qwill Updated!', 'success')
         return redirect(url_for('users.qwill', username=username, qwill_id=qwill.id))

@@ -73,7 +73,17 @@
                                 {% endif %}
                             {% endif %}
                             <div class="content">
-                                <p class="article-content">{{ qwipp.content }}</p>
+                                <p>
+                                    {% for word in qwipp.content.split() %}
+                                        {% if word.startswith('#') %}
+                                            <a class="reverse-font" href="{{ url_for('main.hashtagPosts', hashtag=word[1:]) }}">{{ word }}</a>
+                                        {% elif word.startswith('@') %}
+                                            <a class="reverse-font" href="{{ url_for('users.profile', username=word[1:]) }}">{{ word }}</a>
+                                        {% else %}
+                                            {{ word }}
+                                        {% endif %}
+                                    {% endfor %}
+                                </p>
                             <div>
                             <small class="date-time text-muted">{{ qwipp.date_posted.strftime('%b %d, %Y') }}</small>
                             {% if qwipp.date_edited != None %}
@@ -180,9 +190,74 @@
                             </div>
                             <div class="content">
                                 {% if qwill.content | length > 256 %}
-                                    <p class="article-content">{{ qwill.content[0:256] }}<small class="text-muted">... Read More</small></p>
+                                    {% for line in qwill.content[0:256].split('\n') %}
+                                        {% if loop.index < 4 %}
+                                            {% if line.strip() == '' %}
+                                                </br>
+                                            {% else %}
+                                                <p>
+                                                    {% for word in line.split() %}
+                                                        {% if word.startswith('#') %}
+                                                            <a class="reverse-font" href="{{ url_for('main.hashtagPosts', hashtag=word[1:]) }}">{{ word }}</a>
+                                                        {% elif word.startswith('@') %}
+                                                            <a class="reverse-font" href="{{ url_for('users.profile', username=word[1:]) }}">{{ word }}</a>
+                                                        {% else %}
+                                                            {{ word }}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    {% if loop.last %}
+                                                        <small class="text-muted">... Read More</small>
+                                                    {% endif %}
+                                                </p>
+                                            {% endif %}
+                                        {% elif loop.index==4 %}
+                                                <p>
+                                                    {% for word in line.split() %}
+                                                        {% if word.startswith('#') %}
+                                                            <a class="reverse-font" href="{{ url_for('main.hashtagPosts', hashtag=word[1:]) }}">{{ word }}</a>
+                                                        {% elif word.startswith('@') %}
+                                                            <a class="reverse-font" href="{{ url_for('users.profile', username=word[1:]) }}">{{ word }}</a>
+                                                        {% else %}
+                                                            {{ word }}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    <small class="text-muted">... Read More</small>
+                                                </p>
+                                        {% endif %}
+                                    {% endfor %}
                                 {% else %}
-                                    <p class="article-content">{{ qwill.content }}</p>
+                                    {% for line in qwill.content.split('\n') %}
+                                        {% if loop.index < 4 %}
+                                            {% if line.strip() == '' %}
+                                                </br>
+                                            {% else %}
+                                                <p>
+                                                    {% for word in line.split() %}
+                                                        {% if word.startswith('#') %}
+                                                            <a class="reverse-font" href="{{ url_for('main.hashtagPosts', hashtag=word[1:]) }}">{{ word }}</a>
+                                                        {% elif word.startswith('@') %}
+                                                            <a class="reverse-font" href="{{ url_for('users.profile', username=word[1:]) }}">{{ word }}</a>
+                                                        {% else %}
+                                                            {{ word }}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </p>
+                                            {% endif %}
+                                        {% elif loop.index==4 %}
+                                            <p>
+                                                {% for word in line.split() %}
+                                                    {% if word.startswith('#') %}
+                                                        <a class="reverse-font" href="{{ url_for('main.hashtagPosts', hashtag=word[1:]) }}">{{ word }}</a>
+                                                    {% elif word.startswith('@') %}
+                                                        <a class="reverse-font" href="{{ url_for('users.profile', username=word[1:]) }}">{{ word }}</a>
+                                                    {% else %}
+                                                        {{ word }}
+                                                    {% endif %}
+                                                {% endfor %}
+                                                <small class="text-muted">... Read More</small>
+                                            </p>
+                                        {% endif %}
+                                    {% endfor %}
                                 {% endif %}
                             <div>
                             <small class="date-time text-muted">{{ qwill.date_posted.strftime('%b %d, %Y') }}</small>

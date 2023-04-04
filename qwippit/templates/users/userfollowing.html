@@ -1,54 +1,68 @@
 {% extends "main/layout.html" %}
 {% block content %}
     <div class="following">
-        {% for user in following %}
-            {% if loop.length == 1 %}
-                <article onclick="location.href='{{ url_for('users.profile', username=user.username) }}'" class="row content-section-only user-feed">
-            {% elif loop.last %}
-                <article onclick="location.href='{{ url_for('users.profile', username=user.username) }}'" class="row content-section-last user-feed-last">
-            {% else %}
-                <article onclick="location.href='{{ url_for('users.profile', username=user.username) }}'" class="row content-section user-feed">
-            {% endif %}
+        {% if following.count() == 0 %}
+            <article class="row content-section-only-empty user-feed">
                 <div class="d-flex media">
-                    <div class="col-lg d-flex">
-                        <img class="me-3 rounded-circle border border-highlight" width="65px" height="65px" src="{{ url_for('static', filename='profile_pics/' + user.image_file) }}">
+                    <div class="col-lg d-flex justify-content-center">
                         <div class="media-body">
-                            <div class="article-metadata mb-2">
-                                <a class="author-link me-1" href="{{ url_for('users.profile', username=user.username) }}">{{ user.displayname }}</a>
-                                <small class="text-muted">@{{ user.username }}</small>
-                            </div>
-                            {% if user.bio %}
-                                <div class="article-metadata bio mb-4">
-                                    <p class="main-font-nh">{{ user.bio }}</small>
-                                </div>
-                            {% endif %}
-                            <div class="followers-following mt-2">
-                                <div class="followers">
-                                    {% if user.followers.count() == 1 %}
-                                        <a href="{{ url_for('users.user_followers', username=user.username) }}" class="main-font" id="user-followers-{{ user.id }}">{{ user.followers.count() | number_format }} Follower</a>
-                                    {% else %}
-                                        <a href="{{ url_for('users.user_followers', username=user.username) }}" class="main-font" id="user-followers-{{ user.id }}">{{ user.followers.count() | number_format }} Followers</a>
-                                    {% endif %}
-                                </div>
+                            <div class="empty-user-header">
+                                <h4>This user isn't following anyone.</h4>
                             </div>
                         </div>
                     </div>
-                    {% if request.MOBILE %}
-                        <div class="follow col-sm ms-4 mt-4" style="text-align: right;">
-                    {% else %}
-                        <div class="follow col-sm mt-4" style="text-align: right;">
-                    {% endif %}
-                        {% if current_user.is_following(user) %}
-                            <button type="button" id="follow-button-{{ user.id }}" onclick="followUser('{{ user.id }}'); event.stopPropagation();" class="btn btn-primary mb-2">Unfollow</button>
-                        {% elif current_user == user %}
-
-                        {% else %}
-                            <button type="button" id="follow-button-{{ user.id }}" onclick="followUser('{{ user.id }}'); event.stopPropagation();" class="btn btn-outline-primary mb-2">Follow</button>
-                        {% endif %}
-                    </div>
                 </div>
             </article>
-        {% endfor %}
+        {% else %}
+            {% for user in following %}
+                {% if loop.length == 1 %}
+                    <article onclick="location.href='{{ url_for('users.profile', username=user.username) }}'" class="row content-section-only user-feed">
+                {% elif loop.last %}
+                    <article onclick="location.href='{{ url_for('users.profile', username=user.username) }}'" class="row content-section-last user-feed-last">
+                {% else %}
+                    <article onclick="location.href='{{ url_for('users.profile', username=user.username) }}'" class="row content-section user-feed">
+                {% endif %}
+                    <div class="d-flex media">
+                        <div class="col-lg d-flex">
+                            <img class="me-3 rounded-circle border border-highlight" width="65px" height="65px" src="{{ url_for('static', filename='profile_pics/' + user.image_file) }}">
+                            <div class="media-body">
+                                <div class="article-metadata mb-2">
+                                    <a class="author-link me-1" href="{{ url_for('users.profile', username=user.username) }}">{{ user.displayname }}</a>
+                                    <small class="text-muted">@{{ user.username }}</small>
+                                </div>
+                                {% if user.bio %}
+                                    <div class="article-metadata bio mb-4">
+                                        <p class="main-font-nh">{{ user.bio }}</small>
+                                    </div>
+                                {% endif %}
+                                <div class="followers-following mt-2">
+                                    <div class="followers">
+                                        {% if user.followers.count() == 1 %}
+                                            <a href="{{ url_for('users.user_followers', username=user.username) }}" class="main-font" id="user-followers-{{ user.id }}">{{ user.followers.count() | number_format }} Follower</a>
+                                        {% else %}
+                                            <a href="{{ url_for('users.user_followers', username=user.username) }}" class="main-font" id="user-followers-{{ user.id }}">{{ user.followers.count() | number_format }} Followers</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% if request.MOBILE %}
+                            <div class="follow col-sm ms-4 mt-4" style="text-align: right;">
+                        {% else %}
+                            <div class="follow col-sm mt-4" style="text-align: right;">
+                        {% endif %}
+                            {% if current_user.is_following(user) %}
+                                <button type="button" id="follow-button-{{ user.id }}" onclick="followUser('{{ user.id }}'); event.stopPropagation();" class="btn btn-primary mb-2">Unfollow</button>
+                            {% elif current_user == user %}
+
+                            {% else %}
+                                <button type="button" id="follow-button-{{ user.id }}" onclick="followUser('{{ user.id }}'); event.stopPropagation();" class="btn btn-outline-primary mb-2">Follow</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </article>
+            {% endfor %}
+        {% endif %}
         <script>
           function followUser(user_id) {
                 var btn = document.getElementById("follow-button-" + user_id);

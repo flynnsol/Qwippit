@@ -155,7 +155,7 @@ class Qwill(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     date_edited = db.Column(db.DateTime)
-    title = db.Column(db.Text(), nullable=False)
+    title = db.Column(db.Text(64), nullable=False)
     content = db.Column(db.Text(), nullable=False)
     views = db.Column(db.Integer, nullable=False, default=0)
     likes = db.Column(db.Integer, nullable=False, default=0)

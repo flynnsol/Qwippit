@@ -12,7 +12,23 @@
                 <h2>{{ qwill.title }}</h2>
             </div>
             <div class="content">
-                <p class="article-content">{{ qwill.content }}</p>
+                {% for line in qwill.content.split('\n') %}
+                    {% if line.strip() == '' %}
+                        </br>
+                    {% else %}
+                        <p>
+                            {% for word in line.split() %}
+                                {% if word.startswith('#') %}
+                                    <a class="reverse-font" href="{{ url_for('main.hashtagPosts', hashtag=word[1:]) }}">{{ word }}</a>
+                                {% elif word.startswith('@') %}
+                                    <a class="reverse-font" href="{{ url_for('users.profile', username=word[1:]) }}">{{ word }}</a>
+                                {% else %}
+                                    {{ word }}
+                                {% endif %}
+                            {% endfor %}
+                        </p>
+                    {% endif %}
+                {% endfor %}
             <div>
             <small class="date-time text-muted">{{ qwill.date_posted.strftime('%b %d, %Y') }}</small>
             {% if qwill.date_edited != None %}
@@ -148,8 +164,18 @@
                         {% endif %}
 
                         <div class="content">
-                            <p class="article-content">{{ replyQwipp.content }}</p>
-                        <div>
+                            <p>
+                                {% for word in replyQwipp.content.split() %}
+                                    {% if word.startswith('#') %}
+                                        <a class="reverse-font" href="{{ url_for('main.hashtagPosts', hashtag=word[1:]) }}">{{ word }}</a>
+                                    {% elif word.startswith('@') %}
+                                        <a class="reverse-font" href="{{ url_for('users.profile', username=word[1:]) }}">{{ word }}</a>
+                                    {% else %}
+                                        {{ word }}
+                                    {% endif %}
+                                {% endfor %}
+                            </p>
+                        </div>
                         <small class="date-time text-muted">{{ replyQwipp.date_posted.strftime('%b %d, %Y') }}</small>
                         {% if replyQwipp.date_edited != None %}
                             <small class="date-time text-muted ms-4">Edited: {{ replyQwipp.date_edited.strftime('%b %d, %Y') }}</small>
