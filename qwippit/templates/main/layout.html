@@ -26,6 +26,12 @@
             <nav class="navbar navbar-expand-md navbar-dark bg-main-highlight fixed-top">
                 <div class="container">
                     <a class="navbar-brand mr-4 main-font" href="{{ url_for('main.home') }}"><img src="{{ url_for('static', filename='img/logo-zoomed.svg') }}"></a>
+                    {% if request.MOBILE %}
+                        <form class="col ms-auto me-2">
+                            <input class="form-control" id="search_box" type="search" placeholder="Search" aria-label="Search">
+                        </form>
+                        <div id="search_result" class="position-absolute top-100"></div>
+                    {% endif %}
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
@@ -36,6 +42,10 @@
                                     <a class="nav-item nav-link main-font btn btn-outline-primary mt-3 mb-3" href="{{ url_for('main.home') }}">Qwipp</a>
                                     <a class="nav-item nav-link main-font btn btn-outline-primary mb-3" href="{{ url_for('users.signout') }}">Sign Out</a>
                                 {% else %}
+                                    <form>
+                                        <input class="form-control" id="search_box" type="search" placeholder="Search" aria-label="Search">
+                                    </form>
+                                    <div id="search_result" class="desktop-search-result position-absolute top-100"></div>
                                     <a class="nav-item nav-link main-font btn btn-outline-primary" href="{{ url_for('main.home') }}">Qwipp</a>
                                     <a class="nav-item nav-link main-font btn btn-outline-primary" href="{{ url_for('users.signout') }}">Sign Out</a>
                                 {% endif %}
@@ -130,17 +140,64 @@
                     </div>
                 {% endif %}
             </div>
-            {% if request.MOBILE %}
-                <div class="mobile-nav">
-
-                </div>
-            {% endif %}
         </main>
 
         <!-- JS -->
         <script>
             $(document).ready(function(){
                 $(".alert").delay(3000).slideUp(500);
+            });
+
+            $(document).ready(function() {
+                function load_data(query) {
+                    var csrftoken = $('meta[name=csrf-token]').attr('content');
+                    $.ajaxSetup({
+                        beforeSend: function(xhr, settings) {
+                            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                                xhr.setRequestHeader('X-CSRFToken', csrftoken);
+                            }
+                        }
+                    });
+
+                    $.ajax({
+                        url:"/live-search",
+                        method:"POST",
+                        data:{query},
+                        success:function(data) {
+                            $('#search_result').html(data.htmlresponse);
+                        }
+                    });
+                }
+
+                $('#search_box').keyup(function() {
+                    var search = $(this).val();
+                    load_data(search);
+                });
+            });
+
+
+            $('input[type=search]').on('search', function () {
+                // search logic here - SUBMIT FORM
+
+
+                var query = '';
+                var csrftoken = $('meta[name=csrf-token]').attr('content');
+                $.ajaxSetup({
+                    beforeSend: function(xhr, settings) {
+                        if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                            xhr.setRequestHeader('X-CSRFToken', csrftoken);
+                        }
+                    }
+                });
+
+                $.ajax({
+                    url:"/live-search",
+                    method:"POST",
+                    data:{query},
+                    success:function(data) {
+                        $('#search_result').html(data.htmlresponse);
+                    }
+                });
             });
         </script>
     </body>

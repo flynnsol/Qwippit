@@ -1,10 +1,10 @@
-from flask import Blueprint, request, render_template, redirect, url_for, flash
+from flask import Blueprint, request, render_template, redirect, url_for, flash, jsonify
 from flask_login import current_user
 from sqlalchemy import func
 
 from qwippit.qwipps.forms import QwippForm, QwillForm
 from qwippit import db
-from qwippit.models import Qwipp, Qwill, Hashtag
+from qwippit.models import Qwipp, Qwill, Hashtag, User
 
 main = Blueprint('main', __name__)
 
@@ -35,6 +35,33 @@ def getHashtagQwills(hashtag):
     qwills = Qwill.query.filter(Qwill.content.contains("#" + hashtag)).all()
 
     return qwills
+
+
+def getSearchQwipps(search_word):
+    # TODO: The Algorithm
+    qwipps = Qwipp.query.filter(Qwipp.content.contains(search_word)).all()
+
+    return qwipps
+
+
+def getSearchQwills(search_word):
+    # TODO: The Algorithm
+    qwills = Qwill.query.filter(Qwill.title.contains(search_word)).all()
+
+    return qwills
+
+def getSearchUsers(search_word):
+    # TODO: The Algorithm
+    users = User.query.filter(User.username.contains(search_word)).all()
+
+    return users
+
+
+def getSearchHashtags(search_word):
+    # TODO: The Algorithm
+    hashtags = Hashtag.query.filter(Hashtag.content.contains(search_word)).all()
+
+    return hashtags
 
 
 
@@ -95,3 +122,18 @@ def hashtagPosts(hashtag):
     qwipps = getHashtagQwipps(hashtag)
     qwills = getHashtagQwills(hashtag)
     return render_template('main/hashtag.html', title="#" + hashtag, qwipps=qwipps, qwills=qwills, hashtag=hashtag)
+
+
+@main.route("/live-search", methods=['POST'])
+def live_search():
+    if request.method == 'POST':
+        search_word = request.form['query']
+        qwipps = getSearchQwipps(search_word)
+        qwills = getSearchQwills(search_word)
+        users = getSearchUsers(search_word)
+        if search_word == '':
+            qwipps = None
+            qwills = None
+            users = None
+            return jsonify({'htmlresponse': render_template('main/empty.html')})
+    return jsonify({'htmlresponse': render_template('main/livesearch.html', qwipps=qwipps, qwills=qwills, users=users, search_word=search_word)})

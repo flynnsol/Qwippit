@@ -98,6 +98,22 @@ a {
     padding-right: 2rem !important;
 }
 
+.search-content {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    max-height: 80vh;
+    scrollbar-width: thin;
+}
+
+#search_result {
+    margin-right: 1rem;
+}
+
+.desktop-search-result {
+    margin-left: -6rem;
+    width: 40vw;
+}
+
 /* Center Content (Feed) */
 
 .center-content {

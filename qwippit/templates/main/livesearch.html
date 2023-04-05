@@ -1,0 +1,394 @@
+
+{% if request.MOBILE %}
+    <div class="col-md-2 center-content search-content">
+{% else %}
+    <div class="col-md-10 center-content search-content">
+{% endif %}
+    {% if qwipps |length != 0 %}
+        {% for qwipp in qwipps %}
+            <article onclick="location.href='{{ url_for('users.qwipp', username=qwipp.author.username, qwipp_id=qwipp.id) }}'" class="row ps-2 content-section">
+                <div class="d-flex media">
+                    <img class="me-3 rounded-circle border border-highlight" width="65px" height="65px" src="{{ url_for('static', filename='profile_pics/' + qwipp.author.image_file) }}">
+                    <div class="media-body">
+                        {% if qwipp.is_reply %}
+                            <div class="article-metadata">
+                        {% else %}
+                            <div class="article-metadata mb-2">
+                        {% endif %}
+                            <a class="author-link mr-2" href="{{ url_for('users.profile', username=qwipp.author.username) }}">{{ qwipp.author.displayname }}</a>
+                            <small class="text-muted">@{{ qwipp.author.username }}</small>
+                        </div>
+                        {% if qwipp.is_reply %}
+                            {% if qwipp.qwipp_reply_id %}
+                                <div class="mb-2">
+                                    <small class="text-muted">Replying to <a href="{{ url_for('users.qwipp', username=qwipp.qwipp_replied_to.author.username, qwipp_id=qwipp.qwipp_replied_to.id) }}" class="main-font">@{{ qwipp.qwipp_replied_to.author.username }}</a></small>
+                                </div>
+                            {% else %}
+                                <div class="mb-2">
+                                    <small class="text-muted">Replying to <a href="{{ url_for('users.qwill', username=qwipp.qwill_reply.author.username, qwill_id=qwipp.qwill_reply.id) }}" class="main-font">@{{ qwipp.qwill_reply.author.username }}</a></small>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                        <div class="content">
+                            <p>
+                                {% for word in qwipp.content.split() %}
+                                    {% if word.startswith('#') %}
+                                        <a class="reverse-font" href="{{ url_for('main.hashtagPosts', hashtag=word[1:]) }}">{{ word }}</a>
+                                    {% elif word.startswith('@') %}
+                                        <a class="reverse-font" href="{{ url_for('users.profile', username=word[1:]) }}">{{ word }}</a>
+                                    {% else %}
+                                        {{ word }}
+                                    {% endif %}
+                                {% endfor %}
+                            </p>
+                        </div>
+                        <small class="date-time text-muted">{{ qwipp.date_posted.strftime('%b %d, %Y') }}</small>
+                        {% if qwipp.date_edited != None %}
+                            <small class="date-time text-muted ms-4">Edited: {{ qwipp.date_edited.strftime('%b %d, %Y') }}</small>
+                        {% endif %}
+                        <div class="bottom-content mt-2">
+                            {% if qwipp.author.username == current_user.username %}
+                                <small class="main-font-nh">
+                                    <span id="likes-qwipp-{{ qwipp.id }}">{{ qwipp.likes }}</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
+                                      <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
+                                    </svg>
+                                </small>
+                            {% else %}
+                                {% if current_user.is_authenticated %}
+                                    {% if qwipp in current_user.liked_qwipps %}
+                                        <small class="likes">
+                                            <a onclick="likeQwipp('{{ qwipp.author.username }}', {{ qwipp.id }}); event.stopPropagation();" class="main-font">
+                                                <span id="likes-qwipp-{{ qwipp.id }}">{{ qwipp.likes | number_format }}</span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" id="heart-qwipp-{{ qwipp.id }}" class="bi bi-heart-fill" viewBox="0 0 16 16">
+                                                  <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
+                                                </svg>
+                                            </a>
+                                        </small>
+                                    {% else %}
+                                        <small class="likes">
+                                            <a onclick="likeQwipp('{{ qwipp.author.username }}', {{ qwipp.id }}); event.stopPropagation();" class="main-font">
+                                                <span id="likes-qwipp-{{ qwipp.id }}">{{ qwipp.likes | number_format }}</span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" id="heart-qwipp-{{ qwipp.id }}" class="bi bi-heart" viewBox="0 0 16 16">
+                                                  <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>
+                                                </svg>
+                                            </a>
+                                        </small>
+                                    {% endif %}
+                                {% else %}
+                                    <small class="likes">
+                                        <a href="{{ url_for('users.signin') }}" class="main-font">
+                                            <span id="likes-qwipp-{{ qwipp.id }}">{{ qwipp.likes | number_format }}</span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" id="heart-qwipp-{{ qwipp.id }}" class="bi bi-heart" viewBox="0 0 16 16">
+                                              <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>
+                                            </svg>
+                                        </a>
+                                    </small>
+                                {% endif %}
+                            {% endif %}
+                            {% if current_user.is_authenticated %}
+                                <a href="{{ url_for('users.reply_qwipp', username=qwipp.author.username, qwipp_id=qwipp.id) }}" class="main-font ms-3">
+                                    <span id="replies-qwipp-{{ qwipp.id }}">{{ qwipp.replies | length | number_format }}</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-left-text comments" viewBox="0 0 16 16">
+                                      <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                                      <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
+                                    </svg>
+                                </a>
+                            {% else %}
+                                <small class="main-font-nh ms-3">
+                                    <span id="replies-qwipp-{{ qwipp.id }}">{{ qwipp.replies | length | number_format }}</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-left-text comments" viewBox="0 0 16 16">
+                                      <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                                      <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
+                                    </svg>
+                                </small>
+                            {% endif %}
+                            <small class="main-font-nh views ms-3">
+                                <span>{{ qwipp.views | number_format }}</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                                  <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+                                  <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+                                </svg>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    {% else %}
+        <article class="row content-section profile-empty-content-section">
+            <div class="media">
+                <div class="media-body">
+                    <div class="content">
+                        <h4 class="article-content">No Qwipps Containing {{ search_word }}.</h4>
+                    <div>
+                </div>
+            </div>
+        </article>
+    {% endif %}
+    {% if qwills |length != 0 %}
+        {% for qwill in qwills %}
+            <article onclick="location.href='{{ url_for('users.qwill', username=qwill.author.username, qwill_id=qwill.id) }}'" class="row ps-2 content-section">
+                <div class="d-flex media">
+                    <img class="me-3 rounded-circle border border-highlight" width="65px" height="65px" src="{{ url_for('static', filename='profile_pics/' + qwill.author.image_file) }}">
+                    <div class="media-body">
+                        <div class="article-metadata">
+                            <a class="author-link mr-2" href="{{ url_for('users.profile', username=qwill.author.username) }}">{{ qwill.author.displayname }}</a>
+                            <small class="text-muted">@{{ qwill.author.username }}</small>
+                        </div>
+                        <div class="qwill-title">
+                            <h2>{{ qwill.title }}</h2>
+                        </div>
+                        <div class="content">
+                            {% if qwill.content | length > 256 %}
+                                {% for line in qwill.content[0:256].split('\n') %}
+                                    {% if loop.index < 4 %}
+                                        {% if line.strip() == '' %}
+                                            </br>
+                                        {% else %}
+                                            <p>
+                                                {% for word in line.split() %}
+                                                    {% if word.startswith('#') %}
+                                                        <a class="reverse-font" href="{{ url_for('main.hashtagPosts', hashtag=word[1:]) }}">{{ word }}</a>
+                                                    {% elif word.startswith('@') %}
+                                                        <a class="reverse-font" href="{{ url_for('users.profile', username=word[1:]) }}">{{ word }}</a>
+                                                    {% else %}
+                                                        {{ word }}
+                                                    {% endif %}
+                                                {% endfor %}
+                                                {% if loop.last %}
+                                                    <small class="text-muted">... Read More</small>
+                                                {% endif %}
+                                            </p>
+                                        {% endif %}
+                                    {% elif loop.index==4 %}
+                                            <p>
+                                                {% for word in line.split() %}
+                                                    {% if word.startswith('#') %}
+                                                        <a class="reverse-font" href="{{ url_for('main.hashtagPosts', hashtag=word[1:]) }}">{{ word }}</a>
+                                                    {% elif word.startswith('@') %}
+                                                        <a class="reverse-font" href="{{ url_for('users.profile', username=word[1:]) }}">{{ word }}</a>
+                                                    {% else %}
+                                                        {{ word }}
+                                                    {% endif %}
+                                                {% endfor %}
+                                                <small class="text-muted">... Read More</small>
+                                            </p>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                {% for line in qwill.content.split('\n') %}
+                                    {% if loop.index < 4 %}
+                                        {% if line.strip() == '' %}
+                                            </br>
+                                        {% else %}
+                                            <p>
+                                                {% for word in line.split() %}
+                                                    {% if word.startswith('#') %}
+                                                        <a class="reverse-font" href="{{ url_for('main.hashtagPosts', hashtag=word[1:]) }}">{{ word }}</a>
+                                                    {% elif word.startswith('@') %}
+                                                        <a class="reverse-font" href="{{ url_for('users.profile', username=word[1:]) }}">{{ word }}</a>
+                                                    {% else %}
+                                                        {{ word }}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </p>
+                                        {% endif %}
+                                    {% elif loop.index==4 %}
+                                        <p>
+                                            {% for word in line.split() %}
+                                                {% if word.startswith('#') %}
+                                                    <a class="reverse-font" href="{{ url_for('main.hashtagPosts', hashtag=word[1:]) }}">{{ word }}</a>
+                                                {% elif word.startswith('@') %}
+                                                    <a class="reverse-font" href="{{ url_for('users.profile', username=word[1:]) }}">{{ word }}</a>
+                                                {% else %}
+                                                    {{ word }}
+                                                {% endif %}
+                                            {% endfor %}
+                                            <small class="text-muted">... Read More</small>
+                                        </p>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        <div>
+                        <small class="date-time text-muted">{{ qwill.date_posted.strftime('%b %d, %Y') }}</small>
+                        {% if qwill.date_edited != None %}
+                            <small class="date-time text-muted ms-4">Edited: {{ qwill.date_edited.strftime('%b %d, %Y') }}</small>
+                        {% endif %}
+                        <div class="bottom-content mt-2">
+                            {% if qwill.author.username == current_user.username %}
+                                <small class="main-font-nh">
+                                    <span id="likes-qwill-{ qwill.id }}">{{ qwill.likes | number_format }}</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
+                                      <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
+                                    </svg>
+                                </small>
+                            {% else %}
+                                {% if current_user.is_authenticated %}
+                                    {% if qwill in current_user.liked_qwills %}
+                                        <small class="likes">
+                                            <a onclick="likeQwill('{{ qwill.author.username }}', {{ qwill.id }}); event.stopPropagation();" class="main-font">
+                                                <span id="likes-qwill-{{ qwill.id }}">{{ qwill.likes | number_format }}</span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" id="heart-qwill-{{ qwill.id }}" class="bi bi-heart-fill" viewBox="0 0 16 16">
+                                                  <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
+                                                </svg>
+                                            </a>
+                                        </small>
+                                    {% else %}
+                                        <small class="likes">
+                                            <a onclick="likeQwill('{{ qwill.author.username }}', {{ qwill.id }}); event.stopPropagation();" class="main-font">
+                                                <span id="likes-qwill-{{ qwill.id }}">{{ qwill.likes | number_format }}</span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" id="heart-qwill-{{ qwill.id }}" class="bi bi-heart" viewBox="0 0 16 16">
+                                                  <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>
+                                                </svg>
+                                            </a>
+                                        </small>
+                                    {% endif %}
+                                {% else %}
+                                    <small class="likes">
+                                        <a href="{{ url_for('users.signin') }}" class="main-font">
+                                            <span id="likes-qwill-{{ qwill.id }}">{{ qwill.likes | number_format }}</span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" id="heart-qwill-{{ qwill.id }}" class="bi bi-heart" viewBox="0 0 16 16">
+                                              <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>
+                                            </svg>
+                                        </a>
+                                    </small>
+                                {% endif %}
+                            {% endif %}
+                            {% if current_user.is_authenticated %}
+                                <a href="{{ url_for('users.reply_qwill', username=qwill.author.username, qwill_id=qwill.id) }}" class="main-font ms-3">
+                                    <span id="replies-qwill-{{ qwill.id }}">{{ qwill.replies | length | number_format }}</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-left-text comments" viewBox="0 0 16 16">
+                                      <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                                      <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
+                                    </svg>
+                                </a>
+                            {% else %}
+                                <small class="main-font-nh ms-3">
+                                    <span id="replies-qwill-{{ qwill.id }}">{{ qwill.replies | length | number_format }}</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-left-text comments" viewBox="0 0 16 16">
+                                      <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4.414A2 2 0 0 0 3 11.586l-2 2V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12.793a.5.5 0 0 0 .854.353l2.853-2.853A1 1 0 0 1 4.414 12H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+                                      <path d="M3 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM3 6a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9A.5.5 0 0 1 3 6zm0 2.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
+                                    </svg>
+                                </small>
+                            {% endif %}
+                            <small class="main-font-nh views ms-3">
+                                <span>{{ qwill.views | number_format }}</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye mb-1" viewBox="0 0 16 16">
+                                  <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+                                  <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+                                </svg>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    {% else %}
+        <article class="row content-section profile-empty-content-section">
+            <div class="media">
+                <div class="media-body">
+                    <div class="content">
+                        <h4 class="article-content">No Qwills Containing {{ search_word }}.</h4>
+                    <div>
+                </div>
+            </div>
+        </article>
+    {% endif %}
+    {% if users | length == 0 %}
+        <article class="row content-section-only-empty user-feed">
+            <div class="d-flex media">
+                <div class="col-lg d-flex justify-content-center">
+                    <div class="media-body">
+                        <div class="empty-user-header">
+                            <h4>No Usernames containing {{ search_word }}.</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    {% else %}
+        {% for user in users %}
+            {% if loop.length == 1 %}
+                <article onclick="location.href='{{ url_for('users.profile', username=user.username) }}'" class="row content-section-only ps-2 user-feed" style="margin-top: -1px;">
+            {% elif loop.last %}
+                <article onclick="location.href='{{ url_for('users.profile', username=user.username) }}'" class="row content-section-last ps-2 user-feed-last" style="margin-top: -1px;">
+            {% else %}
+                <article onclick="location.href='{{ url_for('users.profile', username=user.username) }}'" class="row content-section ps-2 user-feed" style="margin-top: -1px;">
+            {% endif %}
+                <div class="d-flex media">
+                    <div class="col-lg d-flex">
+                        <img class="me-3 rounded-circle border border-highlight" width="65px" height="65px" src="{{ url_for('static', filename='profile_pics/' + user.image_file) }}">
+                        <div class="media-body">
+                            <div class="article-metadata mb-2">
+                                <a class="author-link me-1" href="{{ url_for('users.profile', username=user.username) }}">{{ user.displayname }}</a>
+                                <small class="text-muted">@{{ user.username }}</small>
+                            </div>
+                            {% if user.bio %}
+                                <div class="article-metadata bio mb-4">
+                                    <p class="main-font-nh">{{ user.bio }}</p>
+                                </div>
+                            {% endif %}
+                            <div class="followers-following mt-2">
+                                <div class="followers">
+                                    {% if user.followers.count() == 1 %}
+                                        <a href="{{ url_for('users.user_followers', username=user.username) }}" class="main-font" id="user-followers-{{ user.id }}">{{ user.followers.count() | number_format }} Follower</a>
+                                    {% else %}
+                                        <a href="{{ url_for('users.user_followers', username=user.username) }}" class="main-font" id="user-followers-{{ user.id }}">{{ user.followers.count() | number_format }} Followers</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% if request.MOBILE %}
+                        <div class="follow col-sm ms-4 mt-4" style="text-align: right;">
+                    {% else %}
+                        <div class="follow col-sm mt-4" style="text-align: right;">
+                    {% endif %}
+                        {% if current_user.is_following(user) %}
+                            <button type="button" id="follow-button-{{ user.id }}" onclick="followUser('{{ user.id }}'); event.stopPropagation();" class="btn btn-primary mb-2">Unfollow</button>
+                        {% elif current_user == user %}
+
+                        {% else %}
+                            <button type="button" id="follow-button-{{ user.id }}" onclick="followUser('{{ user.id }}'); event.stopPropagation();" class="btn btn-outline-primary mb-2">Follow</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    {% endif %}
+    <script>
+      function followUser(user_id) {
+            var btn = document.getElementById("follow-button-" + user_id);
+            if (btn.getAttribute("class") === "btn btn-outline-primary mb-2") {
+                btn.setAttribute("class", "btn btn-primary mb-2");
+                btn.innerHTML = 'Unfollow';
+            } else {
+                btn.setAttribute("class", "btn btn-outline-primary mb-2");
+                btn.innerHTML = 'Follow';
+            }
+
+            var csrftoken = $('meta[name=csrf-token]').attr('content');
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader('X-CSRFToken', csrftoken);
+                    }
+                }
+            });
+
+            $.ajax({
+                url: '/u/' + user_id + '/follow',
+                type: 'POST',
+                data: { user_id },
+                success: function (data) {
+                    if (parseInt(data) === 1) {
+                        $('#user-followers-' + user_id).text(data + " Follower");
+                    } else {
+                        $('#user-followers-' + user_id).text(data + " Followers");
+                    }
+                }
+            });
+        }
+    </script>
+</div>
