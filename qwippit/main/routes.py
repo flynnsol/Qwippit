@@ -11,14 +11,14 @@ main = Blueprint('main', __name__)
 
 def getQwipps():
     # TODO: The Algorithm
-    qwipps = Qwipp.query.all()
+    qwipps = Qwipp.query.order_by(Qwipp.date_posted.desc()).all()
 
     return qwipps
 
 
 def getQwills():
     # TODO: The Algorithm
-    qwills = Qwill.query.all()
+    qwills = Qwill.query.order_by(Qwill.date_posted.desc()).all()
 
     return qwills
 

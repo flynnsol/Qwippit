@@ -56,6 +56,10 @@
                                     <a class="nav-item nav-link main-font btn btn-outline-primary mt-3 mb-3" href="{{ url_for('users.signin') }}">Sign In</a>
                                     <a class="nav-item nav-link main-font btn btn-outline-primary mb-3" href="{{ url_for('users.signup') }}">Sign Up</a>
                                 {% else %}
+                                    <form>
+                                        <input class="form-control" id="search_box" type="search" placeholder="Search" aria-label="Search">
+                                    </form>
+                                    <div id="search_result" class="desktop-search-result position-absolute top-100"></div>
                                     <a class="nav-item nav-link main-font btn btn-outline-primary" href="{{ url_for('users.signin') }}">Sign In</a>
                                     <a class="nav-item nav-link main-font btn btn-outline-primary" href="{{ url_for('users.signup') }}">Sign Up</a>
                                 {% endif %}

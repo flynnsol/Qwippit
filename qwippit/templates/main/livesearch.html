@@ -1,4 +1,3 @@
-
 {% if request.MOBILE %}
     <div class="col-md-2 center-content search-content">
 {% else %}
@@ -345,12 +344,14 @@
                     {% else %}
                         <div class="follow col-sm mt-4" style="text-align: right;">
                     {% endif %}
-                        {% if current_user.is_following(user) %}
-                            <button type="button" id="follow-button-{{ user.id }}" onclick="followUser('{{ user.id }}'); event.stopPropagation();" class="btn btn-primary mb-2">Unfollow</button>
-                        {% elif current_user == user %}
+                        {% if current_user.is_authenticated %}
+                            {% if current_user.is_following(user) %}
+                                <button type="button" id="follow-button-{{ user.id }}" onclick="followUser('{{ user.id }}'); event.stopPropagation();" class="btn btn-primary mb-2">Unfollow</button>
+                            {% elif current_user == user %}
 
-                        {% else %}
-                            <button type="button" id="follow-button-{{ user.id }}" onclick="followUser('{{ user.id }}'); event.stopPropagation();" class="btn btn-outline-primary mb-2">Follow</button>
+                            {% else %}
+                                <button type="button" id="follow-button-{{ user.id }}" onclick="followUser('{{ user.id }}'); event.stopPropagation();" class="btn btn-outline-primary mb-2">Follow</button>
+                            {% endif %}
                         {% endif %}
                     </div>
                 </div>

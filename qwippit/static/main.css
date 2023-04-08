@@ -2,6 +2,7 @@ body {
     background: #31263B;
     color: #EFDBF9;
     margin-top: 5rem;
+    overflow-x: hidden;
 }
 
 .rounded-circle {
@@ -80,7 +81,7 @@ a {
     display: flex;
     align-items: stretch; /* Default */
     justify-content: space-between;
-    width: 100%;
+    width: 90vw;
     margin: 0;
     padding: 0;
     margin-left: 0.5rem;

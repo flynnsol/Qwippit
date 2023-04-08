@@ -39,8 +39,9 @@ def signup():
         db.session.add(user)
         db.session.commit()
         send_verify_email(user)
+        login_user(user)
         flash(f'Your account has been created! A link has been sent to verify your email address.', 'success')
-        return redirect(url_for('users.signin'))
+        return redirect(url_for('main.home'))
     return render_template('users/signup.html', title='Sign Up', form=form)
 
 
@@ -50,13 +51,14 @@ def signin():
         return redirect(url_for('main.home'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter(func.lower(User.email) == func.lower(form.email.data)).first_or_404()
+        user = User.query.filter(func.lower(User.email) == func.lower(form.email.data)).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
             return redirect(next_page) if next_page else redirect(url_for('main.home'))
         else:
             flash('Sign In Unsuccessful. Please check email and password.', 'danger')
+            return render_template('users/signin.html', title='Sign In', form=form)
 
     return render_template('users/signin.html', title='Sign In', form=form)
 
@@ -410,6 +412,7 @@ def reset_token(token):
 
 
 @users.route("/verify_email/<token>")
+@login_required
 def verify_email(token):
     if token in verify_blacklist:
         flash('That token has already been used.', 'danger')
@@ -428,6 +431,7 @@ def verify_email(token):
 
 
 @users.route("/verify_email")
+@login_required
 def verify_request():
     user = current_user
     if user.emailverified:
