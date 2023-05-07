@@ -54,6 +54,7 @@ class User(db.Model, UserMixin):
     image_file = db.Column(db.String(20), nullable=False, default='default.png')
     banner_file = db.Column(db.String(20), nullable=False, default='default.png')
     password = db.Column(db.String(60), nullable=False)
+    verified = db.Column(db.Boolean(), nullable=False, default=False)
 
 
     emailverified = db.Column(db.Boolean(), nullable=False, default=False)
@@ -74,6 +75,8 @@ class User(db.Model, UserMixin):
 
     qwipps = db.relationship('Qwipp', backref='author', lazy=True)
     qwills = db.relationship('Qwill', backref='author', lazy=True)
+
+    roles = db.relationship('Role', secondary='user_roles')
 
     # notifications
     like_notifications = db.Column(db.Boolean(), nullable=False, default=True)
@@ -130,6 +133,19 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}', '{self.image_file}')"
+
+
+class Role(db.Model):
+    __tablename__ = 'roles'
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(50), unique=True)
+
+# Define the UserRoles association table
+class UserRoles(db.Model):
+    __tablename__ = 'user_roles'
+    id = db.Column(db.Integer(), primary_key=True)
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id', ondelete='CASCADE'))
+    role_id = db.Column(db.Integer(), db.ForeignKey('roles.id', ondelete='CASCADE'))
 
 
 class Qwipp(db.Model):

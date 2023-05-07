@@ -30,7 +30,7 @@
                         <form class="col ms-auto me-2">
                             <input class="form-control" id="search_box" type="search" placeholder="Search" aria-label="Search">
                         </form>
-                        <div id="search_result" class="position-absolute top-100"></div>
+                        <div id="search_result" class="position-absolute top-100" style="width: 95vw;"></div>
                     {% endif %}
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
@@ -181,10 +181,8 @@
 
 
             $('input[type=search]').on('search', function () {
-                // search logic here - SUBMIT FORM
 
-
-                var query = '';
+                var query = $(this).val().trim();
                 var csrftoken = $('meta[name=csrf-token]').attr('content');
                 $.ajaxSetup({
                     beforeSend: function(xhr, settings) {
@@ -195,11 +193,12 @@
                 });
 
                 $.ajax({
-                    url:"/live-search",
+                    url:"/search",
                     method:"POST",
                     data:{query},
                     success:function(data) {
-                        $('#search_result').html(data.htmlresponse);
+                        var redirectUrl = "/search?query=" + encodeURIComponent(query);
+                        window.location.href = redirectUrl;
                     }
                 });
             });

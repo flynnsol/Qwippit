@@ -137,3 +137,21 @@ def live_search():
             users = None
             return jsonify({'htmlresponse': render_template('main/empty.html')})
     return jsonify({'htmlresponse': render_template('main/livesearch.html', qwipps=qwipps, qwills=qwills, users=users, search_word=search_word)})
+
+
+@main.route("/search", methods=['GET', 'POST'])
+def search():
+    search_word = ''
+    if request.method == 'POST':
+        search_word = request.form['query']
+        qwipps = getSearchQwipps(search_word)
+        qwills = getSearchQwills(search_word)
+        users = getSearchUsers(search_word)
+        return render_template('main/search.html', title=search_word, search_word=search_word, qwipps=qwipps,
+                               qwills=qwills, users=users)
+    else:
+        search_word = request.args.get('query', '')
+        qwipps = getSearchQwipps(search_word)
+        qwills = getSearchQwills(search_word)
+        users = getSearchUsers(search_word)
+        return render_template('main/search.html', title=search_word, search_word=search_word, qwipps=qwipps, qwills=qwills, users=users)

@@ -1,5 +1,6 @@
 body {
     background: #31263B;
+    min-height: 800px;
     color: #EFDBF9;
     margin-top: 5rem;
     overflow-x: hidden;
@@ -11,6 +12,15 @@ body {
 
 p {
     margin-bottom: 0;
+    word-wrap: break-word;
+}
+
+h2 {
+    word-wrap: break-word;
+}
+
+h4 {
+    word-wrap: break-word;
 }
 
 a {
@@ -81,11 +91,11 @@ a {
     display: flex;
     align-items: stretch; /* Default */
     justify-content: space-between;
-    width: 90vw;
+    width: 90%;
     margin: 0;
     padding: 0;
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
+    margin-left: 5%;
+    margin-right: 5%;
 }
 
 .bottom-nav-mobile-item {
@@ -93,10 +103,10 @@ a {
     flex: 0 1 auto; /* Default */
     list-style-type: none;
     margin-left: 0 !important;
-    padding-top: 0.5rem !important;
-    padding-bottom: 0.5rem !important;
-    padding-left: 2rem !important;
-    padding-right: 2rem !important;
+    padding-top: 5% !important;
+    padding-bottom: 5% !important;
+    padding-left: 2% !important;
+    padding-right: 2% !important;
 }
 
 .search-content {
@@ -130,7 +140,7 @@ a {
     border-top: 0.15rem solid;
 
     border-color: #43374C;
-    margin-bottom: 2rem;
+    margin-bottom: 4rem;
 }
 
 .center-content-top {
@@ -331,6 +341,10 @@ a {
     background-color: #31263B;
 }
 
+.media-body {
+    width: 80%;
+}
+
 
 /* Side Content Lists */
 
@@ -499,6 +513,10 @@ input:-webkit-autofill:focus {
 
 .bio-text-area {
     resize: none;
+}
+
+.bio {
+    width: 20vw;
 }
 
 /* Followers/Following */
