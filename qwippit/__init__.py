@@ -25,11 +25,13 @@ def create_app(config_class=Config):
     from qwippit.users.routes import users
     from qwippit.main.routes import main
     from qwippit.hashtags.routes import hashtags
+    from qwippit.dashboard.routes import dash
     from qwippit.errors.handlers import errors
 
     app.register_blueprint(users)
     app.register_blueprint(main)
     app.register_blueprint(hashtags)
+    app.register_blueprint(dash)
     app.register_blueprint(errors)
 
     Mobility(app)
