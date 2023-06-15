@@ -9,13 +9,20 @@ from qwippit.users.forms import LoginForm
 dash = Blueprint('dash', __name__)
 
 
+def getDashUsers():
+    # TODO: Caching
+    users = User.query.all()
+
+    return users
+
+
 @dash.route("/home", subdomain='dash')
 def dash_home():
     if request.referrer:
         if current_user.is_authenticated:
             if len(current_user.roles) > 0:
                 if current_user.roles[0].name == 'Admin':
-                    return render_template('dash/home.html', title='Dashboard Home')
+                    return render_template('dash/home.html', title='Dashboard Home', users=getDashUsers())
             else:
                 flash('You do not have access to that page.', 'danger')
                 return redirect(url_for('dash.dash_redirect'))

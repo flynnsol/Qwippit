@@ -1,6 +1,65 @@
 {% extends "dash/dash_layout.html" %}
 {% block content %}
-  <div class="row">
-    <h4>Dash</h4>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    td, th {
+      border: 1px solid #43374C;
+      text-align: left;
+      padding: 8px;
+    }
+
+    tr:nth-child(even) {
+      background-color: #372C41;
+    }
+  </style>
+  <div class="d-flex justify-content-center">
+    <div class="row" style="width: 80vw;">
+      <table>
+        <tr>
+          <th>Display Name</th>
+          <th>Username</th>
+          <th>Verified</th>
+          <th>Email Verified</th>
+          <th>2FA Enabled</th>
+          <th>Qwipps</th>
+          <th>Qwills</th>
+          <th>Followers</th>
+          <th>Following</th>
+          <th>Ban</th>
+        </tr>
+        {% for user in users %}
+          <tr>
+            <td>{{ user.displayname }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.verified }}</td>
+            <td>{{ user.emailverified }}</td>
+            <td>False</td>
+            <td>{{ user.qwipps | length | number_format }}</td>
+            <td>{{ user.qwills | length | number_format }}</td>
+            <td>{{ user.followers.count() | number_format }}</td>
+            <td>{{ user.following.count() | number_format }}</td>
+            <td><button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#banModal" style="width: 100%;">Ban</button></td>
+          </tr>
+        {% endfor %}
+      </table>
+      <div class="modal fade" id="banModal" tabindex="-1" aria-labelledby="banModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="banModalLabel">Ban User?</h5>
+            </div>
+            <div class="modal-footer d-flex">
+              <form action="#" method="POST">
+                  <input class="btn btn-danger" type="submit" value="Ban">
+              </form>
+              <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 {% endblock content %}
